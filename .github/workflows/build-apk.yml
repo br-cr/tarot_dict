@@ -52,9 +52,15 @@ jobs:
           pip install buildozer "cython<3.0.0"
 
       - name: Build APK with Buildozer
+        env:
+          # Desactivar variables preinstaladas del SDK/NDK de la VM de GitHub
+          ANDROID_HOME: ""
+          ANDROID_SDK_ROOT: ""
+          ANDROID_NDK_HOME: ""
+          ANDROID_NDK_ROOT: ""
         run: |
-          yes | buildozer -v android debug
-
+          buildozer -v android debug
+          
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
