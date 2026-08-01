@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-        image: ghcr.io/kivy/buildozer:stable
+        image: ghcr.io/kivy/buildozer:latest
     steps:
       - name: Descargar el código del repo
         uses: actions/checkout@v4
