@@ -51,16 +51,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install buildozer "cython<3.0.0"
 
+      # Pre-aceptar las licencias de Android en el directorio de Buildozer
+      - name: Pre-accept Android SDK Licenses
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          
+          SDK_LIC_DIR="$HOME/.buildozer/android/platform/android-sdk/licenses"
+          mkdir -p "$SDK_LIC_DIR"
+          
+          printf "89330d2222116a3a569d10727f322b2600005251\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63c6825ea9c5514f83c2829b004d1fee\n20110323315132204a37e1b52b314120302b1f1a\n" > "$SDK_LIC_DIR/android-sdk-license"
+          printf "84831b9409646a918e30573bab4c9c91346d8abd\n" > "$SDK_LIC_DIR/android-sdk-preview-license"
+          printf "d975f751698a778109bf03cfd920f70e13233d68\n" > "$SDK_LIC_DIR/android-sdk-arm-dcl-license"
+
       - name: Build APK with Buildozer
         env:
-          # Desactivar variables preinstaladas del SDK/NDK de la VM de GitHub
           ANDROID_HOME: ""
           ANDROID_SDK_ROOT: ""
           ANDROID_NDK_HOME: ""
           ANDROID_NDK_ROOT: ""
         run: |
           buildozer -v android debug
-          
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
