@@ -249,8 +249,6 @@ ios.codesign.allowed = false
 # This option should be defined along with `app_url` and `display_image_url` options.
 #ios.manifest.full_size_image_url =
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 2
 #-----------------------------------------------------------------------------
 #   Notes about using this file:
 #
