@@ -1,0 +1,28 @@
+name: Compilar APK con Buildozer
+
+# Se ejecuta cada vez que subís cambios a la rama "main",
+# y también podés dispararlo a mano desde la pestaña "Actions" de GitHub.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código del repo
+        uses: actions/checkout@v4
+
+      - name: Compilar el APK
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: stable
+
+      - name: Subir el APK como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: diccionariotarot-apk
+          path: ${{ steps.buildozer.outputs.filename }}

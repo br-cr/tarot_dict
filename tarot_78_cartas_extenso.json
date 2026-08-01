@@ -1,0 +1,326 @@
+{
+    "arcanos_mayores": {
+        "El Loco": {
+            "derecho": "Representa el comienzo de un nuevo viaje lleno de optimismo, fe ciega y entusiasmo. Es la energía del salto al vacío hacia lo desconocido, la libertad absoluta sin ataduras ni prejuicios, y la inocencia que permite aprender a través del entusiasmo y el espíritu de aventura.",
+            "invertido": "Indica actuar con imprudencia extrema, asumir riesgos innecesarios o irresponsables sin sopesar las consecuencias. Puede significar miedo paralizante a dar un nuevo paso, inmadurez, falta de compromiso o ingenuidad que lleva a caer en situaciones peligrosas."
+        },
+        "El Mago": {
+            "derecho": "Símbolo de maestría, capacidad de manifestación y voluntad firme. Indica que posees todas las herramientas mentales, emocionales y materiales necesarias para convertir tus ideas y deseos en realidad tangible mediante la iniciativa, la concentración y la habilidad.",
+            "invertido": "Alerta sobre el uso inadecuado del poder personal, manipulación, astucia malintencionada o engaños. Refleja talentos desaprovechados, falta de claridad de propósito, estafas o la incapacidad de concretar planes por falta de autoconfianza o disciplina."
+        },
+        "La Sacerdotisa": {
+            "derecho": "Representa la intuición profunda, la sabiduría interior, el subconsciente y el conocimiento esotérico. Es una invitación a la introspección, al silencio meditativo, a confiar en tus corazonadas y a permitir que los secretos o verdades ocultas se revelen a su debido tiempo.",
+            "invertido": "Señala desconexión de la voz interior, superficialidad y desconfianza en la propia intuición. Puede indicar la presencia de secretos malintencionados, manipulación oculta, chismes o represión de los sentimientos y emociones más profundas."
+        },
+        "La Emperatriz": {
+            "derecho": "Encarna la abundancia, la fertilidad, la creación artística y la nutrición en todas sus formas. Representa la conexión con la naturaleza, el disfrute de los placeres sensoriales, el crecimiento próspero de proyectos y el cuidado amoroso hacia uno mismo y hacia los demás.",
+            "invertido": "Indica bloqueos creativos, problemas de fertilidad o dificultades financieras. Refleja dependencia emocional, sobreprotección asfixiante, descuido de la salud personal o una búsqueda vacía de satisfacción puramente material sin sustento afectivo."
+        },
+        "El Emperador": {
+            "derecho": "Representa la autoridad legítima, la estructura, el orden, la disciplina y el liderazgo firme. Señala la capacidad de crear límites saludables, establecer bases sólidas y organizar el caos para lograr metas de largo plazo mediante la lógica y el autocontrol.",
+            "invertido": "Alerta sobre autoritarismo, tiranía, rigidez mental y abuso de poder. Puede reflejar una falta total de disciplina, caos organizativo, incapacidad para asumir responsabilidades de liderazgo o un conflicto marcado con la figura paterna o jefaturas."
+        },
+        "El Hierofante": {
+            "derecho": "Símbolo de las instituciones, los sistemas de creencias tradicionales, la enseñanza formal y la guía espiritual. Invita al aprendizaje bajo el cobijo de un mentor, al respeto por las costumbres establecidas y a la búsqueda de significado ético y moral en la vida.",
+            "invertido": "Representa el rechazo a las normas obsoletas, la rebelión contra el dogmatismo y el pensamiento independiente. Advierte sobre falsos guías espirituales, rigidez ideológica excesiva o la necesidad de crear un sistema propio de valores al margen de la sociedad."
+        },
+        "Los Enamorados": {
+            "derecho": "Indica armonía, atracción mutua, relaciones profundas e integración de opuestos. Representa decisiones trascendentales en el amor o la vida personal que deben tomarse en perfecta alineación con los valores propios y la integridad del corazón.",
+            "invertido": "Señala desarmonía, conflictos de valores en relaciones, mala comunicación y decisiones erradas en el amor. Puede advertir sobre tentaciones destructivas, falta de compromiso, rupturas sentimentales o la incapacidad de elegir con madurez."
+        },
+        "El Carro": {
+            "derecho": "Representa la victoria, la determinación, la fuerza de voluntad y el triunfo sobre la adversidad. Muestra la capacidad de mantener el control sobre fuerzas opuestas o contradictorias para avanzar con decisión hacia el éxito y la realización de ambiciones.",
+            "invertido": "Alerta sobre la pérdida de control, falta de dirección, agresión desmedida o derrotas causadas por la impaciencia. Indica la presencia de obstáculos externos insuperables o la necesidad urgente de recalibrar la velocidad y la meta."
+        },
+        "La Fuerza": {
+            "derecho": "Simboliza el valor sereno, la paciencia, la compasión y el dominio de los impulsos primarios a través del amor y la firmeza suave. Es la capacidad de afrontar los grandes problemas con resiliencia, empatía y verdadero control emocional en lugar de violencia bruta.",
+            "invertido": "Muestra dudas sobre la propia capacidad, inseguridad profunda y falta de autocontrol. Representa momentos de debilidad ante los impulsos, rendición prematura ante la presión, agresión impulsiva o una baja autoestima paralizante."
+        },
+        "El Ermitaño": {
+            "derecho": "Representa la búsqueda voluntaria de la soledad, el retiro del mundo exterior para meditar y alcanzar la claridad espiritual. Es la luz de la sabiduría interior que guía los pasos en momentos de transición o búsqueda de verdades profundas.",
+            "invertido": "Señala aislamiento destructivo, soledad no deseada, amargura o desconexión social excesiva. Advierte sobre la terquedad para aceptar consejos sabios o el miedo a mirar hacia adentro y afrontar la propia realidad."
+        },
+        "La Rueda de la Fortuna": {
+            "derecho": "Simboliza los ciclos inevitables de la vida, el destino, el cambio constante y las oportunidades kármicas. Recuerda que todo cambia y evoluciona, trayendo giros afortunados, sincronicidades y sorpresas positivas en momentos decisivos.",
+            "invertido": "Indica una racha de mala suerte temporal, resistencia inútil al cambio o repetición de patrones negativos del pasado. Muestra la sensación de estar atrapado en circunstancias fuera de control o sufriendo las consecuencias de malas decisiones pasadas."
+        },
+        "La Justicia": {
+            "derecho": "Encarna la verdad, la equidad, la causa y el efecto, e integridad moral. Indica que la honestidad prevalecerá y que se tomarán decisiones legales o personales justas, asumiendo las responsabilidades directas de los propios actos pasados.",
+            "invertido": "Advierte sobre injusticias, deshonestidad, prejuicios, fallos desfavorables o evasión de responsabilidad. Señala situaciones donde hay parcialidad, acusaciones falsas o la negación de asumir las consecuencias de las propias acciones."
+        },
+        "El Colgado": {
+            "derecho": "Representa una pausa necesaria en la vida, el cambio de perspectiva y la rendición voluntaria ante las circunstancias. Sugiere sacrificar algo de menor valor temporal para ganar una iluminación o comprensión mucho mayor a futuro.",
+            "invertido": "Indica estancamiento inútil, resistencia a ceder, retrasos frustrantes y martirio innecesario. Muestra la incapacidad de ver las cosas desde otro ángulo, manteniéndose aferrado a ilusiones sin avanzar en ninguna dirección."
+        },
+        "La Muerte": {
+            "derecho": "Simboliza una transformación profunda e inevitable, el cierre definitivo de una etapa y la necesidad de dejar ir lo que ya no sirve para dar paso a un renacimiento lleno de nuevas oportunidades y crecimiento real.",
+            "invertido": "Muestra resistencia dolorosa al cambio, miedo a dejar el pasado y aferramiento a situaciones tóxicas o agotadas. Advierte sobre un estancamiento prolongado y el sufrimiento derivado de no aceptar los finales necesarios."
+        },
+        "La Templanza": {
+            "derecho": "Representa la moderación, el equilibrio emocional, la paciencia y la armonía. Indica la capacidad de sintetizar opuestos, sanar heridas del pasado y actuar con calma y diplomacia en medio de la agitación.",
+            "invertido": "Señala desequilibrio, excesos, falta de paciencia y conducta impulsiva. Advierte sobre tensiones internas, falta de armonía en proyectos o relaciones, y la incapacidad de encontrar un punto medio razonable."
+        },
+        "El Diablo": {
+            "derecho": "Alerta sobre ataduras emocionales o materiales, adicciones, obsesiones y comportamientos autodestructivos. Representa la ilusión de estar atrapado por fuerzas externas, cuando en realidad son limitaciones y miedos autoimpuestos.",
+            "invertido": "Simboliza la toma de conciencia, la ruptura de cadenas limitantes y la liberación de adicciones o relaciones tóxicas. Indica recuperar el control sobre la propia vida y liberarse de sombras del pasado."
+        },
+        "La Torre": {
+            "derecho": "Representa el colapso repentino e inevitable de estructuras falsas, creencias obsoletas o situaciones insostenibles. Es una catarsis dolorosa pero liberadora que destruye las ilusiones para permitir construir sobre bases verdaderas.",
+            "invertido": "Indica evitar por poco una gran crisis, o por el contrario, posponer lo inevitable viviendo en tensión constante. Muestra el miedo al colapso y el sufrimiento prolongado por no querer afrontar una verdad evidente."
+        },
+        "La Estrella": {
+            "derecho": "Simboliza la esperanza renovada, la inspiración, la fe profunda y la sanación en todos los niveles. Tras la tormenta, trae paz, serenidad, claridad sobre el propósito de vida y la promesa de un futuro brillante y próspero.",
+            "invertido": "Advierte sobre pesimismo, falta de fe, desesperanza y desaliento. Muestra una desconexión de los propios sueños, desinspiración y la incapacidad de ver la luz al final del túnel debido al enfoque en la negatividad."
+        },
+        "La Luna": {
+            "derecho": "Representa el reino del subconsciente, la intuición, los sueños y la imaginación, pero también los miedos irracionales, la ansiedad, la confusión y la ilusión. Advierte sobre no dejarse llevar por engaños o proyecciones falsas.",
+            "invertido": "Señala la disipación de la confusión, la revelación de mentiras o engaños y la superación de miedos y ansiedades. Indica un despertar hacia la claridad mental y la capacidad de distinguir la realidad de la fantasía."
+        },
+        "El Sol": {
+            "derecho": "Encarna el éxito absoluto, la felicidad radiante, la vitalidad, la verdad y la alegría de vivir. Trae claridad, energía positiva, reconocimiento público y una sensación de plenitud y abundancia en todos los aspectos.",
+            "invertido": "Indica felicidad o éxito demorado, optimismo excesivo poco realista o nubes pasajeras que empañan la alegría. Puede advertir sobre problemas de ego, soberbia o la incapacidad temporal de disfrutar los logros."
+        },
+        "El Juicio": {
+            "derecho": "Representa un llamado despertar interior, la evaluación consciente del camino recorrido y el perdón liberador. Muestra momentos de absolución, renacimiento espiritual y la toma de decisiones definitivas de vida.",
+            "invertido": "Señala autocrítica destructiva, dudas paralizantes, culpa y la negativa a escuchar la voz interior. Advierte sobre no aprender de los errores pasados y quedarse estancado en el juicio destructivo propio o ajeno."
+        },
+        "El Mundo": {
+            "derecho": "Simboliza la realización total, la culminación exitosa de un gran viaje o proyecto, el cierre perfecto de un ciclo y la integración armoniosa del ser con su entorno. Representa plenitud, triunfo y expansión global.",
+            "invertido": "Indica falta de cierre, metas incompletas o retrasos en la realización final. Muestra la sensación de frustración por no poder dar el último paso o el rechazo a culminar una etapa para empezar otra."
+        }
+    },
+    "arcanos_menores": {
+        "Bastos": {
+            "As de Bastos": {
+                "derecho": "Representa el nacimiento de una pasión arrebatadora, una chispa de inspiración o una oportunidad laboral altamente estimulante. Es el potencial puro para iniciar proyectos con energía, coraje y entusiasmo renovado.",
+                "invertido": "Indica falta de motivación, bloqueo creativo, retrasos frustrantes en el inicio de proyectos o una chispa de energía que se apaga rápidamente por falta de dirección o pasión."
+            },
+            "2 de Bastos": {
+                "derecho": "Muestra la fase de planificación a futuro, la toma de decisiones estratégicas y la visión a largo plazo. Es el momento de salir de la zona de confort para explorar nuevos horizontes y expansionar el poder personal.",
+                "invertido": "Advierte sobre el miedo a lo desconocido, dudas paralizantes al planificar o la falta de visión amplia. Muestra la preferencia por la seguridad estancada frente al crecimiento."
+            },
+            "3 de Bastos": {
+                "derecho": "Simboliza el progreso tangible, la expansión comercial o personal y la espera confiada de los frutos de esfuerzos pasados. Muestra una visión clara y la apertura a alianzas o viajes.",
+                "invertido": "Señala retrasos en planes de viaje o negocios, falta de previsión, obstáculos en la expansión o decepción porque los resultados tardan más de lo esperado."
+            },
+            "4 de Bastos": {
+                "derecho": "Representa la celebración, la armonía familiar, la consolidación de un hogar o la culminación feliz de un hito. Es la estabilidad alegre compartida en comunidad o con seres queridos.",
+                "invertido": "Indica tensión en el hogar, celebraciones canceladas, falta de apoyo familiar o sensación de inestabilidad y falta de pertenencia en el entorno personal."
+            },
+            "5 de Bastos": {
+                "derecho": "Señala competencia, desacuerdos menores, lluvias de ideas agresivas o tensiones cotidianas. Son retos estimulantes que prueban la fuerza del carácter sin ser batallas destructivas.",
+                "invertido": "Advierte sobre evitación poco saludable del conflicto, o por el contrario, escalada de disputas destructivas. También puede significar el fin de una competencia y el acuerdo inevitable."
+            },
+            "6 de Bastos": {
+                "derecho": "Simboliza el triunfo público, el reconocimiento merecido, la victoria y el aplauso de la comunidad. Es la recompensa por el trabajo bien hecho y el aumento de la confianza personal.",
+                "invertido": "Alerta sobre caída de gracia, arrogancia, falta de reconocimiento o un éxito efímero que genera envidias y desilusión posterior."
+            },
+            "7 de Bastos": {
+                "derecho": "Representa defender con firmeza la propia postura o logros frente a la oposición. Muestra valentía, resiliencia y la capacidad de mantenerse fuerte a pesar de estar en desventaja numérica.",
+                "invertido": "Indica agotamiento defensivo, sentirse abrumado por las críticas, rendición frente a la presión externa o la incapacidad de defender las propias ideas con convicción."
+            },
+            "8 de Bastos": {
+                "derecho": "Simboliza la velocidad, la acción rápida, la comunicación fluida y las noticias repentinas. Todo se acelera positivamente, permitiendo que los proyectos avancen sin frenos.",
+                "invertido": "Señala retrasos frustrantes, falta de coordinación, desorden en la comunicación o decisiones tomadas con prisa excesiva que generan caos."
+            },
+            "9 de Bastos": {
+                "derecho": "Muestra la resiliencia final, la firmeza y la guardia en alto tras haber superado múltiples batallas. Estás a un paso de la meta y conservas la fuerza para resistir el último embate.",
+                "invertido": "Advierte sobre paranoia, estar a la defensiva de forma injustificada, agotamiento extremo por no saber cuándo bajar las armas o rendición a último minuto."
+            },
+            "10 de Bastos": {
+                "derecho": "Representa la sobrecarga de responsabilidades, el estrés y el peso de llevar demasiados compromisos a la vez. El éxito ha traído una carga que agota tus fuerzas vitales.",
+                "invertido": "Simboliza la necesidad urgente de delegar, soltar cargas pesadas que no te corresponden o el colapso inevitable si no reconoces tus límites físicos y mentales."
+            },
+            "Sota de Bastos": {
+                "derecho": "Encarna el entusiasmo juvenil, la curiosidad de explorar nuevos caminos, la pasión por aprender y la llegada de noticias alentadoras sobre proyectos creativos o viajes.",
+                "invertido": "Señala inmadurez, impaciencia, falta de compromiso, dispersión de ideas o la llegada de noticias decepcionantes sobre nuevos planes."
+            },
+            "Caballo de Bastos": {
+                "derecho": "Representa la acción apasionada, la audacia, el carisma dinámico y el ímpetu sin vacilaciones para perseguir metas con rapidez y espíritu de aventura.",
+                "invertido": "Alerta sobre impulsividad destructiva, imprudencia, mal carácter, proyectos abandonados a mitad de camino por falta de constancia o demoras en desplazamientos."
+            },
+            "Reina de Bastos": {
+                "derecho": "Simboliza una personalidad fuerte, carismática, independiente, vital y optimista. Posee una gran confianza en sí misma, capacidad ejecutiva y calidez para inspirar a otros.",
+                "invertido": "Indica celos, posesividad, manipular a otros usando la fuerza del carácter, exigencia desmedida o inseguridad disfrazada de arrogancia."
+            },
+            "Rey de Bastos": {
+                "derecho": "Encarna el liderazgo visionario, la capacidad emprendedora, el honor y la autoridad que motiva a través del ejemplo. Es el dominio supremo de la pasión orientado a grandes logros.",
+                "invertido": "Señala autoritarismo, impaciencia, expectativas poco realistas sobre los demás, ego desmedido o agresividad para imponer el propio punto de vista."
+            }
+        },
+        "Copas": {
+            "As de Copas": {
+                "derecho": "Representa el brote inagotable de amor, compasión, sanación emocional y despertar espiritual. Es el inicio de una etapa de plenitud afectiva, creatividad profunda y paz interior.",
+                "invertido": "Indica bloqueo emocional, tristeza reprimida, desamor, falta de empatía hacia uno mismo o el sentimiento de estar emocionalmente vacío y no correspondido."
+            },
+            "2 de Copas": {
+                "derecho": "Simboliza la conexión romántica, la reciprocidad, la atracción mutua y la unión de dos almas. También señala asociaciones armoniosas basadas en el respeto y el afecto sincero.",
+                "invertido": "Advierte sobre desarmonía en la pareja, falta de comunicación, rupturas sentimentales, malentendidos o relaciones desiguales donde el afecto no es mutuo."
+            },
+            "3 de Copas": {
+                "derecho": "Representa la celebración entre amigos, la fraternidad, la alegría compartida y los momentos de reunión en comunidad. Muestra abundancia emocional y apoyo social sólido.",
+                "invertido": "Indica excesos en la vida nocturna o social, chismes destructivos en el grupo de amigos, aislamiento social o la intromisión de terceras personas en una relación."
+            },
+            "4 de Copas": {
+                "derecho": "Muestra apatía, desinterés, aburrimiento y ensimismamiento emocional. La persona está tan enfocada en sus insatisfacciones que no logra ver la nueva copa (oportunidad) que se le ofrece.",
+                "invertido": "Señala el despertar de la apatía, la decisión de dejar atrás el aburrimiento, la apertura a nuevas oportunidades afectivas y el renacimiento de la motivación."
+            },
+            "5 de Copas": {
+                "derecho": "Representa el duelo, la desilusión y el enfoque obsesivo en las pérdidas del pasado (tres copas tiradas), sin darse cuenta de que aún quedan dos copas en pie para reconstruir la vida.",
+                "invertido": "Indica el inicio de la sanación, la aceptación de la pérdida, el perdón, el abandono del papel de víctima y la disposición a seguir adelante mirando al futuro."
+            },
+            "6 de Copas": {
+                "derecho": "Simboliza la nostalgia sana, la inocencia, la generosidad pura y los recuerdos felices de la infancia. Puede señalar el reencuentro con personas del pasado o gestos de cariño sincero.",
+                "invertido": "Advierte sobre vivir atrapado en el pasado, la idealización excesiva de lo vivido, la negativa a madurar o traumas infantiles que condicionan el presente."
+            },
+            "7 de Copas": {
+                "derecho": "Representa la abundancia de opciones, pero también las ilusiones, la fantasía sin pies ni cabeza y la confusión. Invita a distinguir entre deseos realistas y meros castillos en el aire.",
+                "invertido": "Señala el fin de las ilusiones, la claridad mental, el desembarco en la realidad y la toma de decisiones con los pies en la tierra."
+            },
+            "8 de Copas": {
+                "derecho": "Muestra la valentía de alejarse voluntariamente de situaciones, proyectos o relaciones que, aunque fueron importantes, ya no aportan plenitud espiritual ni satisfacción profunda.",
+                "invertido": "Indica miedo a abandonar la zona de confort, permanecer en entornos insatisfactorios o tóxicos por comodidad, e indecisión para emprender el viaje de búsqueda personal."
+            },
+            "9 de Copas": {
+                "derecho": "Conocida como la carta de la satisfacción y los deseos cumplidos. Representa la comodidad material, la alegría íntima, el bienestar físico y la plenitud de disfrutar la vida.",
+                "invertido": "Advierte sobre complacencia excesiva, materialismo, glotonería u otros excesos, o la sensación de insatisfacción interna a pesar de tenerlo todo externamente."
+            },
+            "10 de Copas": {
+                "derecho": "Encarna la máxima felicidad familiar, la armonía del hogar, la paz duradera y el amor incondicional compartido. Representa la realización de la vida afectiva en su máxima expresión.",
+                "invertido": "Señala conflictos en el hogar, valores familiares rotos, falta de armonía con los seres queridos o la búsqueda de un ideal de familia perfecto que no se corresponde con la realidad."
+            },
+            "Sota de Copas": {
+                "derecho": "Representa la sensibilidad artística, el nacimiento de la intuición, los mensajes cariñosos y las sorpresas románticas o creativas presentadas con inocencia e ilusión.",
+                "invertido": "Alerta sobre inmadurez emocional, hipersensibilidad, berrinches, noticias tristes en el ámbito afectivo o tendencia a vivir en una fantasía infantil."
+            },
+            "Caballo de Copas": {
+                "derecho": "Simboliza al mensajero del amor, la poesía, el encanto romántico y la búsqueda de ideales estéticos o afectivos. Avanza de forma fluida y empática ofreciendo su corazón.",
+                "invertido": "Advierte sobre promesas falsas, manipulación emocional sutil, celos, desilusiones amorosas o cambios drásticos de humor que distorsionan la realidad."
+            },
+            "Reina de Copas": {
+                "derecho": "Encarna la empatía suprema, la intuición sanadora, la sabiduría emocional y el cuidado abnegado. Es una persona que escucha con el corazón y ofrece refugio a quienes sufren.",
+                "invertido": "Señala desbordamiento emocional, chantaje sentimental, dependencia codependiente, reclusión en el dolor o manipulación a través de la culpa."
+            },
+            "Rey de Copas": {
+                "derecho": "Representa el equilibrio impecable entre la mente y el corazón, la diplomacia, la sabiduría emocional y la capacidad de mantener la calma en medio de la tormenta afectiva.",
+                "invertido": "Alerta sobre represión emocional, frialdad calculadora, manipulación sutil de los sentimientos ajenos, o adicciones utilizadas para evadir el mundo interior."
+            }
+        },
+        "Espadas": {
+            "As de Espadas": {
+                "derecho": "Representa la claridad mental penetrante, la verdad tajante, los descubrimientos intelectuales y la victoria sobre la confusión. Es la capacidad de cortar con la mentira mediante la lógica pura.",
+                "invertido": "Advierte sobre confusión mental, crueldad verbal, uso de la verdad para lastimar, ideas distorsionadas o decisiones basadas en datos falsos o erróneos."
+            },
+            "2 de Espadas": {
+                "derecho": "Señala un dilema paralizante, la negativa a ver la realidad (ojos vendados) y el bloqueo de las emociones para evitar tomar una decisión difícil entre dos opciones de peso.",
+                "invertido": "Indica la caída de la venda de los ojos, la necesidad impuesta de decidir, la revelación de la verdad y la liberación del bloqueo mental."
+            },
+            "3 de Espadas": {
+                "derecho": "Simboliza el dolor desgarrador, la traición, el desamor, el duelo y las palabras o situaciones que atraviesan el corazón dejando una profunda pena emocional.",
+                "invertido": "Señala el comienzo del proceso de sanación, el perdón de ofensas pasadas, la liberación del dolor acumulado y la superación paulatina de la amargura."
+            },
+            "4 de Espadas": {
+                "derecho": "Invita al descanso mental, la convalecencia, la meditación y el retiro temporal para sanar heridas o recuperarse del estrés extremo antes de regresar a la acción.",
+                "invertido": "Advierte sobre agotamiento severo por no saber parar, regreso prematuro a las luchas cotidianas, inquietud mental constante o insomnio por ansiedad."
+            },
+            "5 de Espadas": {
+                "derecho": "Muestra victorias amargas o pírricas, donde se gana la discusión o la batalla a costa de romper la relación o perder el honor. Alerta sobre egoísmo y engaños.",
+                "invertido": "Indica el deseo de detener la discordia, buscar la reconciliación, admitir errores, dejar atrás el orgullo o superar una derrota amarga."
+            },
+            "6 de Espadas": {
+                "derecho": "Simboliza la transición gradual desde aguas turbulentas hacia costas más tranquilas. Es el viaje físico o mental para dejar atrás los problemas y sanar con paciencia.",
+                "invertido": "Advierte sobre resistencia a soltar los problemas del pasado, viajar con un equipaje emocional pesado, o imprevistos que interrumpen el proceso de recuperación."
+            },
+            "7 de Espadas": {
+                "derecho": "Representa la astucia, la estrategia sigilosa, actuar a espaldas de los demás o el engaño. Sugiere intentar salirse con la suya o buscar atajos ante situaciones difíciles.",
+                "invertido": "Señala la confesión de la verdad, el descubrimiento de mentiras, el arrepentimiento por conductas deshonestas o el fracaso de estrategias trampas."
+            },
+            "8 de Espadas": {
+                "derecho": "Muestra la sensación de estar atrapado, maniatado y a ciegas, pero donde las restricciones son principalmente mentales y creadas por el propio miedo o victimismo.",
+                "invertido": "Representa el empoderamiento personal, la liberación de pensamientos limitantes, el descubrimiento de salidas y la recuperación de la propia libertad."
+            },
+            "9 de Espadas": {
+                "derecho": "Simboliza la angustia extrema, la ansiedad nocturna, las pesadillas, la culpa y la desesperación. Los pensamientos destructivos abruman a la persona en la oscuridad.",
+                "invertido": "Indica alivio de la tortura mental, superación gradual del miedo, búsqueda de ayuda profesional o ver que los miedos eran infundados o exagerados."
+            },
+            "10 de Espadas": {
+                "derecho": "Representa tocar fondo, la traición definitiva, el final doloroso e irrevocable de una situación. La buena noticia es que, desde lo más bajo, solo queda volver a levantarse.",
+                "invertido": "Señala la recuperación tras una gran catástrofe personal, el renacer progresivo, la resiliencia y la certeza de que lo peor ya ha quedado atrás."
+            },
+            "Sota de Espadas": {
+                "derecho": "Encarna una mente analítica, vigilante, curiosa y directa. Es el deseo de investigar la verdad, aprender cosas nuevas o la llegada de noticias que requieren agudeza intelectual.",
+                "invertido": "Advierte sobre chismes destructivos, espionaje malintencionado, cinismo, sarcasmo hiriente o actuar de forma defensiva e inmadura verbalmente."
+            },
+            "Caballo de Espadas": {
+                "derecho": "Representa la determinación incisiva, la prisa por actuar, la ambición intelectual y la defensa apasionada de ideales sin medir a veces las consecuencias colaterales.",
+                "invertido": "Alerta sobre agresividad verbal, comportamiento fanático, imprudencia destructiva, discusiones violentes e impaciencia que causa desastres."
+            },
+            "Reina de Espadas": {
+                "derecho": "Simboliza el discernimiento, la objetividad, la independencia mental y la capacidad de cortar con ilusiones para exigir la verdad con elegancia y franqueza.",
+                "invertido": "Advierte sobre frialdad calculadora, juicio hipercrítico, amargura basada en heridas del pasado, crueldad emocional o aislamiento severo."
+            },
+            "Rey de Espadas": {
+                "derecho": "Encarna la máxima autoridad intelectual, el pensamiento ético, la imparcialidad de juicio, la lógica impecable y el liderazgo basado en la verdad y el derecho.",
+                "invertido": "Señala manipulación mental, uso perverso de la ley o la lógica, tiranía intelectual, frialdad implacable y abuso del poder de decisión."
+            }
+        },
+        "Oros": {
+            "As de Oros": {
+                "derecho": "Representa una oportunidad dorada en lo material, el inicio de la prosperidad económica, una oferta de trabajo sólida o la manifestación de bienestar físico y recursos.",
+                "invertido": "Indica una oportunidad financiera desaprovechada, inversiones poco rentables, retrasos en pagos o una visión materialista que descuida lo esencial."
+            },
+            "2 de Oros": {
+                "derecho": "Muestra la capacidad de hacer malabarismos con las responsabilidades, adaptarse a los cambios financieros y mantener el equilibrio en medio de prioridades cambiantes.",
+                "invertido": "Advierte sobre desequilibrio presupuestario, sobrecarga de compromisos, caos financiero o la incapacidad de organizarse correctamente."
+            },
+            "3 de Oros": {
+                "derecho": "Simboliza el trabajo en equipo, el aprendizaje profesional, la maestría técnica y el reconocimiento de las habilidades dentro de un grupo estructurado.",
+                "invertido": "Señala falta de cooperación en el trabajo, mala calidad por descuido, egoísmo laboral o falta de apreciación por el talento propio o ajeno."
+            },
+            "4 de Oros": {
+                "derecho": "Representa la seguridad económica conseguida, pero advierte sobre el apego excesivo al dinero, la tacañería, el miedo a la pérdida y el control rígido de los recursos.",
+                "invertido": "Indica generosidad renovada, soltar el control obsesivo del dinero, o en el extremo negativo, pérdidas económicas por gastos impulsivos e imprudentes."
+            },
+            "5 de Oros": {
+                "derecho": "Muestra tiempos de escasez material, pobreza, aislamiento social, enfermedad o la sensación de haber sido dejado a la intemperie durante una crisis.",
+                "invertido": "Señala la superación de dificultades económicas, la recuperación del trabajo o la salud, el fin del aislamiento y la llegada de ayuda valiosa."
+            },
+            "6 de Oros": {
+                "derecho": "Simboliza la generosidad equilibrada, la caridad, el flujo justo de dar y recibir, y la ayuda mutua en situaciones donde los recursos abundan y se comparten.",
+                "invertido": "Advierte sobre deudas tóxicas, condiciones humillantes en préstamos, abuso de poder financiero o generosidad egoísta buscando control."
+            },
+            "7 de Oros": {
+                "derecho": "Representa la paciencia, la evaluación del trabajo realizado y la espera consciente de la cosecha. Muestra la sabiduría de dejar madurar los frutos del esfuerzo.",
+                "invertido": "Indica impaciencia destructiva, frustración por lentitud en los resultados, sensación de haber trabajado en vano o inversiones que no rinden lo esperado."
+            },
+            "8 de Oros": {
+                "derecho": "Encarna la dedicación artesanal, la disciplina en el estudio o trabajo, el perfeccionamiento de habilidades y el enfoque minucioso en cada detalle de la labor.",
+                "invertido": "Advierte sobre perfeccionismo paralizante, falta de motivación, trabajo mediocre o repetitivo sin visión de crecimiento o atajos deshonestos."
+            },
+            "9 de Oros": {
+                "derecho": "Simboliza la independencia financiera, el éxito material merecido, el refinamiento, el lujo, la autosuficiencia y el disfrute en soledad de los logros propios.",
+                "invertido": "Señala dependencia económica de terceros, gastos desenfrenados por apariencia, soledad no deseada tras el éxito o estafas financieras."
+            },
+            "10 de Oros": {
+                "derecho": "Representa la abundancia duradera a largo plazo, la estabilidad familiar, la consolidación de un patrimonio, herencias fructíferas y la seguridad de generaciones.",
+                "invertido": "Advierte sobre disputas familiares por dinero o herencias, pérdida de estabilidad patrimonial, deudas heredadas o la ruptura de tradiciones económicas."
+            },
+            "Sota de Oros": {
+                "derecho": "Representa a un estudiante aplicado, la dedicación a aprender un oficio, la búsqueda de oportunidades concretas y una mentalidad práctica orientada a metas.",
+                "invertido": "Señala pereza, falta de constancia, irresponsabilidad financiera, distracción en los estudios o incapacidad para aterrizar proyectos al plano real."
+            },
+            "Caballo de Oros": {
+                "derecho": "Simboliza la constancia inquebrantable, la ética de trabajo rigurosa, la lealtad, la paciencia y el avance metódico sin importar lo lento que sea hacia el éxito.",
+                "invertido": "Advierte sobre terquedad obsesiva, aburrimiento por rutinas aplastantes, falta de iniciativa para innovar o estancamiento por excesiva cautela."
+            },
+            "Reina de Oros": {
+                "derecho": "Encarna la abundancia práctica, el cuidado del hogar y la familia, la generosidad maternal, la conexión sanadora con la naturaleza y el sentido del negocio real.",
+                "invertido": "Señala descuido personal o del hogar, materialismo desmedido, inseguridad económica infundada o dependencia financiera de la pareja."
+            },
+            "Rey de Oros": {
+                "derecho": "Representa la cúspide de la estabilidad material, el éxito empresarial, el liderazgo económico responsable, la fiabilidad y la capacidad de crear riqueza duradera.",
+                "invertido": "Alerta sobre avaricia, corrupción empresarial, uso del dinero como medio de control tiránico, rigidez extrema o quiebra por malas decisiones egoístas."
+            }
+        }
+    }
+}
