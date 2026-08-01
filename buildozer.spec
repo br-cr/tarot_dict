@@ -41,7 +41,7 @@ android.api = 33
 android.minapi = 21
 
 # (str) Android NDK version
-android.ndk = 25b
+# android.ndk = 25b
 
 # (bool) If True, then skip trying to update the Android sdk
 android.skip_update = False
@@ -254,15 +254,6 @@ ios.codesign.allowed = false
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
-
-# (int) Display warning if buildozer is run as root (0 = False, 1 = True)
-warn_on_root = 1
-
-# (str) Path to build artifact storage, absolute or relative to spec file
-# build_dir = ./.buildozer
-
-# (str) Path to build output (i.e. .apk, .aab, .ipa) storage
-# bin_dir = ./bin
 
 #-----------------------------------------------------------------------------
 #   Notes about using this file:
