@@ -17,8 +17,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Compilar el APK con Buildozer
+        env:
+          BUILDOZER_WARN_ON_ROOT: "0"
         run: |
-          # opcional: mostrar versión
           buildozer --version
           buildozer android debug
 
@@ -27,3 +28,5 @@ jobs:
         with:
           name: diccionariotarot-apk
           path: bin/*.apk
+      
+      

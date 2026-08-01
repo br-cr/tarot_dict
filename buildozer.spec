@@ -58,7 +58,7 @@ android.archs = arm64-v8a, armeabi-v7a
 log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = ignore)
-warn_on_root = 1
+warn_on_root = 0
 
 # (str) Filename of OUYA Console icon. It must be a 732x412 png image.
 #android.ouya.icon.filename = %(source.dir)s/data/ouya_icon.png
