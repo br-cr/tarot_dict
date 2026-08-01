@@ -20,8 +20,8 @@ jobs:
             -v "${{ github.workspace }}:/home/user/hostcwd" \
             -w /home/user/hostcwd \
             --env ANDROID_SDK_ROOT=/home/user/.buildozer/android/platform/android-sdk \
-            kivy/buildozer:latest \
-            /bin/bash -lc '
+            --entrypoint /bin/bash \
+            kivy/buildozer:latest -lc '
               set -euo pipefail;
               SDK_ROOT=/home/user/.buildozer/android/platform/android-sdk;
               mkdir -p "$SDK_ROOT";
