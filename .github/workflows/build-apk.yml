@@ -19,8 +19,35 @@ jobs:
           docker run --rm \
             -v "${{ github.workspace }}:/home/user/hostcwd" \
             -w /home/user/hostcwd \
+            --env ANDROID_SDK_ROOT=/home/user/.buildozer/android/platform/android-sdk \
             kivy/buildozer:latest \
-            android debug
+            /bin/bash -lc '
+              set -euo pipefail;
+              SDK_ROOT=/home/user/.buildozer/android/platform/android-sdk;
+              mkdir -p "$SDK_ROOT";
+              cd /tmp;
+
+              # Download and install Android commandline-tools if missing
+              if [ ! -d "$SDK_ROOT/cmdline-tools/latest" ]; then
+                echo "Downloading Android commandline tools...";
+                curl -sSL -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip;
+                unzip -q commandlinetools.zip -d "$SDK_ROOT/cmdline-tools.tmp";
+                mkdir -p "$SDK_ROOT/cmdline-tools/latest";
+                mv "$SDK_ROOT/cmdline-tools.tmp/cmdline-tools"/* "$SDK_ROOT/cmdline-tools/latest/";
+                rm -rf "$SDK_ROOT/cmdline-tools.tmp" commandlinetools.zip;
+              fi;
+
+              export PATH="$SDK_ROOT/cmdline-tools/latest/bin:$PATH";
+
+              # Install platform-tools, a platform and build-tools (adjust API level / versions as needed)
+              yes | sdkmanager --sdk_root="$SDK_ROOT" "platform-tools" "platforms;android-33" "build-tools;33.0.2" || true;
+
+              # Accept licenses non-interactively
+              yes | sdkmanager --sdk_root="$SDK_ROOT" --licenses || true;
+
+              # Run buildozer (adjust target if you use 'release' or different flags)
+              buildozer android debug --verbose
+            '
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
