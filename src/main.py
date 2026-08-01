@@ -5,56 +5,61 @@ import json
 # IMPORTANTE — nitidez en pantallas de escritorio de alta densidad (Retina):
 # Kivy por defecto asume densidad=1 (1dp = 1px), así que en un Mac Retina
 # termina renderizando a una resolución más baja de la real y luego el SO
-# la estira, lo que se ve borroso. La forma correcta de arreglarlo (según
-# la propia documentación de Kivy) es simular una densidad de pantalla
-# real, como la de un celular de gama media/alta, usando estas variables
-# de entorno ANTES de importar kivy. El layout lógico (360x640 "dp") se
-# mantiene igual, pero se dibuja con más píxeles reales -> más nítido.
-# En el APK real (Android) esto no hace falta: el propio dispositivo ya
-# reporta su densidad real y Kivy la usa automáticamente.
-os.environ["KIVY_DPI"] = "320"
-os.environ["KIVY_METRICS_DENSITY"] = "2"
+# la estira, lo que se ve borroso. La forma correcta de arreglarlo es simular
+# una densidad de pantalla real usando estas variables de entorno ANTES de
+# importar kivy.
+# OJO: esto es SOLO para escritorio. En Android el dispositivo reporta su
+# densidad real y forzarla a 2 rompe el escalado en pantallas de densidad 3
+# o 3.5 (todo se veria mas chico de lo debido). p4a define ANDROID_ARGUMENT
+# en el entorno, asi que lo usamos para detectar que corremos en el APK.
+EN_ANDROID = "ANDROID_ARGUMENT" in os.environ
 
-# La ventana de escritorio es redimensionable por defecto en Kivy. Si se
-# arrastra/agranda durante las pruebas, Kivy puede además "recordar" ese
-# tamaño en ~/.kivy/config.ini y reabrir la app así la próxima vez, aunque
-# el código diga otra cosa. Fijamos el tamaño y desactivamos el resize
-# ANTES de importar Window, para simular de forma fiel y estable una
-# pantalla de celular. El tamaño ahora es el doble en píxeles reales
-# (720x1280) porque la densidad simulada también se duplicó (2x), así que
-# el layout se ve exactamente igual de "grande" en pantalla, solo que más
-# nítido.
+if not EN_ANDROID:
+    os.environ["KIVY_DPI"] = "320"
+    os.environ["KIVY_METRICS_DENSITY"] = "2"
+
 from kivy.config import Config
-Config.set("graphics", "width", "720")
-Config.set("graphics", "height", "1280")
-Config.set("graphics", "resizable", "0")
+
+if not EN_ANDROID:
+    # 720x1440 px reales = 360x720 dp logicos: proporcion 18:9, la de un
+    # celular actual. El layout NO depende de este tamaño (es responsive),
+    # esto es solo la ventana de previsualizacion en escritorio.
+    Config.set("graphics", "width", "720")
+    Config.set("graphics", "height", "1440")
+    Config.set("graphics", "resizable", "1")
+    # Minimo bajo a proposito: permite encoger la ventana para comprobar que la
+    # grilla se reacomoda (es la forma de probar el diseño responsive en Mac).
+    Config.set("graphics", "minimum_width", "400")
+    Config.set("graphics", "minimum_height", "640")
 
 from kivy.app import App
+from kivy.clock import Clock
+from kivy.core.text import LabelBase
 from kivy.core.window import Window
-from kivy.metrics import dp
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.label import Label
+from kivy.metrics import dp
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
-from kivy.uix.button import Button
-
-# Redundante pero inofensivo: refuerza el tamaño fijo tipo celular.
-Window.size = (720, 1280)
-Window.resizable = False
+from kivy.uix.label import Label
+from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.uix.scrollview import ScrollView
 
 
-# Paleta de la app (tema "tarot": violeta noche + dorado)
-COLOR_FONDO = (0.07, 0.05, 0.11, 1)
-COLOR_PANEL = (0.11, 0.08, 0.17, 1)
-COLOR_DORADO = (0.78, 0.65, 0.27, 1)
-COLOR_TEXTO = (0.92, 0.90, 0.95, 1)
-COLOR_TEXTO_TENUE = (0.65, 0.62, 0.70, 1)
-COLOR_DERECHO = (0.45, 0.85, 0.55, 1)
-COLOR_INVERTIDO = (0.90, 0.45, 0.45, 1)
+# ---------------------------------------------------------------------------
+# Paleta
+# ---------------------------------------------------------------------------
+COLOR_FONDO = (0.055, 0.043, 0.094, 1)          # violeta noche
+COLOR_SUP = (0.106, 0.086, 0.161, 1)            # superficie (tarjetas)
+COLOR_SUP_ALTA = (0.157, 0.129, 0.231, 1)       # superficie presionada
+COLOR_BORDE = (0.83, 0.70, 0.33, 0.30)
+COLOR_DORADO = (0.83, 0.70, 0.33, 1)
+COLOR_TEXTO = (0.94, 0.93, 0.97, 1)
+COLOR_TEXTO_TENUE = (0.62, 0.59, 0.69, 1)
+COLOR_DERECHO = (0.42, 0.83, 0.55, 1)
+COLOR_INVERTIDO = (0.93, 0.47, 0.47, 1)
 
 Window.clearcolor = COLOR_FONDO
 
@@ -62,50 +67,147 @@ Window.clearcolor = COLOR_FONDO
 from src.ruta_imagenes import RUTA_IMAGEN, BASE_DIR, JSON_PATH
 
 
-KV = """
-<TabButton@ButtonBehavior+BoxLayout>:
+# ---------------------------------------------------------------------------
+# Tipografia: DejaVu Sans desde assets/fonts
+# ---------------------------------------------------------------------------
+# Se registran las 4 variantes como UNA familia, para que bold/italic salgan
+# del archivo correcto en vez de que Kivy los "falsee" deformando la regular.
+DIR_FUENTES = os.path.join(BASE_DIR, "assets", "fonts")
+
+_VARIANTES = {
+    "fn_regular": os.path.join(DIR_FUENTES, "DejaVuSans.ttf"),
+    "fn_bold": os.path.join(DIR_FUENTES, "DejaVuSans-Bold.ttf"),
+    "fn_italic": os.path.join(DIR_FUENTES, "DejaVuSans-Oblique.ttf"),
+    "fn_bolditalic": os.path.join(DIR_FUENTES, "DejaVuSans-BoldOblique.ttf"),
+}
+
+if all(os.path.exists(ruta) for ruta in _VARIANTES.values()):
+    LabelBase.register(name="Tarot", **_VARIANTES)
+    # Ademas pisamos el default de Kivy ("Roboto"), asi cualquier widget que no
+    # declare font_name tambien queda con DejaVu y no hay mezcla de tipografias.
+    LabelBase.register(name="Roboto", **_VARIANTES)
+    FUENTE = "Tarot"
+else:
+    print("[aviso] No se encontraron las fuentes en assets/fonts; se usa la de Kivy.")
+    FUENTE = "Roboto"
+
+
+# ---------------------------------------------------------------------------
+# Metricas del layout responsive
+# ---------------------------------------------------------------------------
+# Los JPG de las cartas miden ~405x700 px -> alto/ancho = 1.73. Usar el ratio
+# real evita que la grilla deje franjas vacias o recorte la ilustracion.
+RATIO_CARTA = 1.73
+
+# Ancho objetivo por carta. Calibrado para que cualquier telefono actual
+# (360-430 dp de ancho) caiga en 3 columnas, y tablets/escritorio crezcan solos.
+ANCHO_TILE_IDEAL = dp(110)
+MIN_COLUMNAS = 2
+MAX_COLUMNAS = 8
+ALTO_ETIQUETA = dp(30)       # espacio del nombre bajo cada carta (2 lineas)
+ALTO_BARRA = dp(56)
+TOQUE_MINIMO = dp(48)        # area tactil minima recomendada en movil
+
+# Solo simbolos presentes en DejaVu Sans. Los emoji tipo U+1F52E NO estan en
+# esta familia y saldrian como cuadro vacio en el APK.
+ICONO_CATEGORIA = {
+    "Mayores": "✦",
+    "Bastos": "♣",
+    "Copas": "♥",
+    "Espadas": "♠",
+    "Oros": "♦",
+}
+ICONO_SIN_IMAGEN = "✦"
+
+
+# ---------------------------------------------------------------------------
+# Reglas KV
+# ---------------------------------------------------------------------------
+# Se interpolan los colores con f-string porque KV no ve las variables globales
+# de este modulo (solo lo importado con #:import).
+KV = f"""
+<Chip@ButtonBehavior+BoxLayout>:
     activo: False
     texto: ""
+    size_hint: None, None
+    height: dp(38)
+    width: max(dp(74), etiqueta.texture_size[0] + dp(28))
     canvas.before:
         Color:
-            rgba: (0.78, 0.65, 0.27, 1) if self.activo else (0.16, 0.12, 0.22, 1)
+            rgba: {COLOR_DORADO} if self.activo else ({COLOR_SUP_ALTA} if self.state == 'down' else {COLOR_SUP})
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(16)]
+            radius: [self.height / 2.0]
+        Color:
+            rgba: (0, 0, 0, 0) if self.activo else {COLOR_BORDE}
+        Line:
+            rounded_rectangle: (self.x + 1, self.y + 1, self.width - 2, self.height - 2, self.height / 2.0)
+            width: 1
+    Label:
+        id: etiqueta
+        text: root.texto
+        font_name: '{FUENTE}'
+        font_size: '13sp'
+        bold: root.activo
+        color: {COLOR_FONDO} if root.activo else {COLOR_TEXTO_TENUE}
+
+<BotonIcono@ButtonBehavior+BoxLayout>:
+    texto: ""
+    size_hint: None, None
+    size: dp(44), dp(44)
+    canvas.before:
+        Color:
+            rgba: {COLOR_SUP_ALTA} if self.state == 'down' else (0, 0, 0, 0)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(22)]
     Label:
         text: root.texto
-        color: (0.07, 0.05, 0.11, 1) if root.activo else (0.85, 0.83, 0.88, 1)
-        bold: root.activo
-        font_size: '13sp'
+        font_name: '{FUENTE}'
+        font_size: '24sp'
+        color: {COLOR_DORADO}
+
+<Panel@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: {COLOR_SUP}
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(14)]
+
+<MarcoImagen@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: {COLOR_DORADO}
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(12)]
 
 <CardTile>:
     orientation: 'vertical'
     canvas.before:
         Color:
-            rgba: (0.14, 0.10, 0.19, 1)
+            rgba: {COLOR_SUP_ALTA} if self.state == 'down' else {COLOR_SUP}
         RoundedRectangle:
             pos: self.pos
             size: self.size
             radius: [dp(12)]
         Color:
-            rgba: (0.78, 0.65, 0.27, 0.55)
+            rgba: {COLOR_BORDE}
         Line:
-            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(12))
+            rounded_rectangle: (self.x + 1, self.y + 1, self.width - 2, self.height - 2, dp(12))
             width: 1
-
-<DetailImageFrame@BoxLayout>:
-    canvas.before:
-        Color:
-            rgba: (0.78, 0.65, 0.27, 1)
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [dp(14)]
 """
 Builder.load_string(KV)
 
 
+# ---------------------------------------------------------------------------
+# Datos
+# ---------------------------------------------------------------------------
 def resolver_ruta_abs(ruta_relativa):
     """RUTA_IMAGEN ya guarda rutas relativas verificadas contra disco;
     si viene vacía, no hay imagen disponible para esa carta."""
@@ -122,11 +224,11 @@ def cargar_y_organizar_datos():
         arcanos_mayores: { "El Loco": {"derecho": .., "invertido": ..}, ... }
         arcanos_menores: { "Bastos": { "As de Bastos": {...}, ... }, ... }
 
-    (no hay "nombre"/"numero"/"significado" anidados: el nombre es la
-    clave del diccionario y el orden define el número).
+    (no hay "nombre"/"numero" anidados: el nombre es la clave del diccionario
+    y el orden define el número).
     """
     if not os.path.exists(JSON_PATH):
-        print(f"❌ ERROR CRÍTICO: No se encontró el JSON en: {JSON_PATH}")
+        print(f"[ERROR] No se encontro el JSON en: {JSON_PATH}")
         return {}
 
     with open(JSON_PATH, "r", encoding="utf-8") as f:
@@ -145,12 +247,12 @@ def cargar_y_organizar_datos():
     for indice, (nombre, significado) in enumerate(arcanos_mayores.items()):
         if not isinstance(significado, dict):
             continue
-        ruta_rel = RUTA_IMAGEN.get(nombre, "")
         categorias["Mayores"].append({
-            "nombre": f"{indice}. {nombre}",
+            "nombre": nombre,
+            "subtitulo": f"Arcano Mayor {indice}",
             "derecho": significado.get("derecho", "Sin texto derecho"),
             "invertido": significado.get("invertido", "Sin texto invertido"),
-            "imagen": resolver_ruta_abs(ruta_rel),
+            "imagen": resolver_ruta_abs(RUTA_IMAGEN.get(nombre, "")),
         })
 
     # 2. Arcanos Menores
@@ -162,19 +264,18 @@ def cargar_y_organizar_datos():
         for nombre, significado in cartas.items():
             if not isinstance(significado, dict):
                 continue
-            ruta_rel = RUTA_IMAGEN.get(nombre, "")
             categorias[cat_nombre].append({
                 "nombre": nombre,
+                "subtitulo": f"Arcano Menor · {cat_nombre}",
                 "derecho": significado.get("derecho", "Sin texto derecho"),
                 "invertido": significado.get("invertido", "Sin texto invertido"),
-                "imagen": resolver_ruta_abs(ruta_rel),
+                "imagen": resolver_ruta_abs(RUTA_IMAGEN.get(nombre, "")),
             })
 
-    # DEPURACIÓN EN CONSOLA
     total = sum(len(v) for v in categorias.values())
     con_imagen = sum(1 for lista in categorias.values() for c in lista if c["imagen"])
     print("\n==========================================")
-    print(f"📊 CARTAS CARGADAS: {total} de 78  |  con imagen: {con_imagen}")
+    print(f"CARTAS CARGADAS: {total} de 78  |  con imagen: {con_imagen}")
     for cat, lista in categorias.items():
         print(f" - {cat}: {len(lista)} cartas")
     print("==========================================\n")
@@ -183,228 +284,346 @@ def cargar_y_organizar_datos():
 
 
 DATOS_TAROT = cargar_y_organizar_datos()
+TOTAL_CARTAS = sum(len(v) for v in DATOS_TAROT.values())
 
 
+# ---------------------------------------------------------------------------
+# Widgets
+# ---------------------------------------------------------------------------
 class CardTile(ButtonBehavior, BoxLayout):
-    """Tarjeta individual de la grilla: imagen + nombre, esquinas redondeadas."""
+    """Tarjeta de la grilla. Su ALTO se deriva del ancho que le asigne el
+    GridLayout, usando el aspect ratio real de la ilustracion. Asi la grilla
+    se adapta sola a cualquier ancho de pantalla sin numeros magicos."""
 
-    def __init__(self, carta, on_press_callback, **kwargs):
+    def __init__(self, carta, al_tocar, **kwargs):
         super().__init__(orientation="vertical", padding=dp(6), spacing=dp(4),
-                          size_hint_y=None, height=dp(190), **kwargs)
+                         size_hint_y=None, height=dp(180), **kwargs)
         self.carta = carta
 
-        img_path = carta["imagen"]
-        if img_path:
-            img = Image(source=img_path, size_hint_y=0.8, allow_stretch=True,
-                        keep_ratio=True, mipmap=True)
+        ruta = carta["imagen"]
+        if ruta:
+            self.visual = Image(source=ruta, size_hint_y=None,
+                                fit_mode="contain", mipmap=True)
         else:
-            img = Label(text="🔮", font_size="34sp", size_hint_y=0.8,
-                        color=COLOR_TEXTO_TENUE)
-        self.add_widget(img)
+            # Marcador de posicion con un simbolo que SI existe en DejaVu.
+            self.visual = Label(text=ICONO_SIN_IMAGEN, font_name=FUENTE,
+                                font_size="30sp", size_hint_y=None,
+                                color=COLOR_TEXTO_TENUE)
+        self.add_widget(self.visual)
 
-        lbl = Label(
+        self.etiqueta = Label(
             text=carta["nombre"],
-            size_hint_y=0.2,
+            size_hint_y=None,
+            height=ALTO_ETIQUETA,
+            font_name=FUENTE,
             font_size="11sp",
             color=COLOR_TEXTO,
             halign="center",
             valign="middle",
+            max_lines=2,
             shorten=True,
             shorten_from="right",
         )
-        lbl.bind(size=lambda inst, val: setattr(inst, "text_size", val))
-        self.add_widget(lbl)
+        self.etiqueta.bind(width=lambda inst, val: setattr(inst, "text_size",
+                                                           (val, ALTO_ETIQUETA)))
+        self.add_widget(self.etiqueta)
 
-        self.bind(on_release=lambda *_: on_press_callback(carta))
+        self.bind(width=self._recalcular_alto)
+        self.bind(on_release=lambda *_: al_tocar(carta))
+        self._recalcular_alto()
+
+    def _recalcular_alto(self, *_):
+        ancho_util = max(dp(1), self.width - self.padding[0] - self.padding[2])
+        alto_imagen = ancho_util * RATIO_CARTA
+        self.visual.height = alto_imagen
+        self.height = (alto_imagen + ALTO_ETIQUETA + self.spacing
+                       + self.padding[1] + self.padding[3])
 
 
+class BarraSuperior(BoxLayout):
+    """App bar fija, patron estandar en apps moviles."""
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault("padding", (dp(14), 0))
+        kwargs.setdefault("spacing", dp(6))
+        super().__init__(orientation="horizontal", size_hint_y=None,
+                         height=ALTO_BARRA, **kwargs)
+
+
+# ---------------------------------------------------------------------------
+# Pantalla 1: grilla
+# ---------------------------------------------------------------------------
 class GridScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.categoria_actual = "Mayores"
-        self.tab_buttons = {}
+        self.chips = {}
+        self._evento_carga = None
+        self._pendientes = []
 
-        root = BoxLayout(orientation="vertical")
+        raiz = BoxLayout(orientation="vertical")
 
-        # --- Encabezado ---
-        header = BoxLayout(orientation="vertical", size_hint_y=None,
-                            height=dp(56), padding=(dp(16), dp(8)))
+        # --- App bar ---
+        barra = BarraSuperior()
         titulo = Label(
-            text="✦ Diccionario Tarot ✦",
-            font_size="19sp",
-            bold=True,
-            color=COLOR_DORADO,
-        )
-        header.add_widget(titulo)
-        root.add_widget(header)
-
-        # --- Barra de categorías (scroll horizontal, estilo pill) ---
-        tabs_scroll = ScrollView(size_hint_y=None, height=dp(44),
-                                  do_scroll_x=True, do_scroll_y=False,
-                                  bar_width=0)
-        tabs_row = BoxLayout(orientation="horizontal", size_hint_x=None,
-                              spacing=dp(8), padding=(dp(12), dp(4)))
-        tabs_row.bind(minimum_width=tabs_row.setter("width"))
-
-        from kivy.factory import Factory
-        for categoria in DATOS_TAROT.keys():
-            btn = Factory.TabButton()
-            btn.texto = categoria
-            btn.activo = (categoria == self.categoria_actual)
-            btn.size_hint = (None, None)
-            btn.size = (dp(84), dp(34))
-            btn.bind(on_release=lambda inst, c=categoria: self.cambiar_categoria(c))
-            self.tab_buttons[categoria] = btn
-            tabs_row.add_widget(btn)
-
-        tabs_scroll.add_widget(tabs_row)
-        root.add_widget(tabs_scroll)
-
-        # --- Grilla de cartas (contenido cambia según categoría) ---
-        self.scroll_grid = ScrollView(size_hint_y=1)
-        self.grid = GridLayout(cols=3, spacing=dp(8), padding=dp(12),
-                                size_hint_y=None)
-        self.grid.bind(minimum_height=self.grid.setter("height"))
-        self.scroll_grid.add_widget(self.grid)
-        root.add_widget(self.scroll_grid)
-
-        self.add_widget(root)
-        self.poblar_grid(self.categoria_actual)
-
-    def cambiar_categoria(self, categoria):
-        if categoria == self.categoria_actual:
-            return
-        self.tab_buttons[self.categoria_actual].activo = False
-        self.categoria_actual = categoria
-        self.tab_buttons[categoria].activo = True
-        self.poblar_grid(categoria)
-
-    def poblar_grid(self, categoria):
-        self.grid.clear_widgets()
-        for carta in DATOS_TAROT.get(categoria, []):
-            self.grid.add_widget(CardTile(carta, self.ver_detalle))
-        self.scroll_grid.scroll_y = 1
-
-    def ver_detalle(self, carta):
-        detalle_screen = self.manager.get_screen("detail")
-        detalle_screen.actualizar_carta(carta)
-        self.manager.current = "detail"
-
-
-class DetailScreen(Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        layout = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(10))
-
-        # Botón volver arriba (más natural en flujo móvil).
-        # Se usa el Button estándar de Kivy (probado y confiable para tocar),
-        # en vez de un widget compuesto a mano.
-        top_bar = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(40))
-        btn_volver = Button(
-            text="‹  Volver",
-            size_hint=(None, None),
-            size=(dp(100), dp(40)),
-            background_normal="",
-            background_down="",
-            background_color=(0, 0, 0, 0),
-            color=COLOR_DORADO,
-            bold=True,
-            font_size="15sp",
-            halign="left",
-        )
-        btn_volver.bind(on_release=self.volver_grilla)
-        top_bar.add_widget(btn_volver)
-        # espaciador para que el botón no ocupe todo el ancho de la fila
-        top_bar.add_widget(BoxLayout())
-        layout.add_widget(top_bar)
-
-        self.lbl_titulo = Label(
-            text="",
-            size_hint_y=None,
-            height=dp(30),
-            font_size="19sp",
+            text="✦  Diccionario Tarot",
+            font_name=FUENTE,
+            font_size="18sp",
             bold=True,
             color=COLOR_DORADO,
             halign="left",
             valign="middle",
         )
-        self.lbl_titulo.bind(size=lambda inst, val: setattr(inst, "text_size", val))
-        layout.add_widget(self.lbl_titulo)
+        titulo.bind(size=lambda inst, val: setattr(inst, "text_size", val))
+        barra.add_widget(titulo)
 
-        # Imagen ampliada con marco dorado
+        self.lbl_contador = Label(
+            text=f"{TOTAL_CARTAS}",
+            size_hint_x=None,
+            width=dp(46),
+            font_name=FUENTE,
+            font_size="12sp",
+            color=COLOR_TEXTO_TENUE,
+            halign="right",
+            valign="middle",
+        )
+        self.lbl_contador.bind(size=lambda inst, val: setattr(inst, "text_size", val))
+        barra.add_widget(self.lbl_contador)
+        raiz.add_widget(barra)
+
+        # --- Chips de categoria (scroll horizontal, tipo pildora) ---
+        chips_scroll = ScrollView(size_hint_y=None, height=dp(50),
+                                  do_scroll_x=True, do_scroll_y=False,
+                                  bar_width=0)
+        self.fila_chips = BoxLayout(orientation="horizontal", size_hint_x=None,
+                                    spacing=dp(8), padding=(dp(14), dp(6)))
+        self.fila_chips.bind(minimum_width=self.fila_chips.setter("width"))
+
         from kivy.factory import Factory
-        frame = Factory.DetailImageFrame()
-        frame.size_hint_y = 0.42
-        frame.padding = dp(3)
-        self.img_carta = Image(size_hint_y=1, keep_ratio=True, allow_stretch=True, mipmap=True)
-        frame.add_widget(self.img_carta)
-        layout.add_widget(frame)
+        for categoria in DATOS_TAROT.keys():
+            chip = Factory.Chip()
+            chip.texto = f"{ICONO_CATEGORIA.get(categoria, '')} {categoria}".strip()
+            chip.activo = (categoria == self.categoria_actual)
+            chip.bind(on_release=lambda inst, c=categoria: self.cambiar_categoria(c))
+            self.chips[categoria] = chip
+            self.fila_chips.add_widget(chip)
 
-        # Scroll de significados (solo vertical: nunca debe permitir scroll
-        # horizontal, así el texto siempre hace wrap al ancho real de pantalla)
-        scroll = ScrollView(size_hint_y=1, do_scroll_x=False, do_scroll_y=True)
-        desc_box = BoxLayout(orientation="vertical", spacing=dp(12),
-                              size_hint_y=None, padding=(0, dp(8)))
-        desc_box.bind(minimum_height=desc_box.setter("height"))
+        chips_scroll.add_widget(self.fila_chips)
+        raiz.add_widget(chips_scroll)
 
-        desc_box.add_widget(self._crear_bloque("Derecho", COLOR_DERECHO, "lbl_derecho"))
-        desc_box.add_widget(self._crear_bloque("Invertido", COLOR_INVERTIDO, "lbl_invertido"))
+        # --- Grilla responsive ---
+        self.scroll_grid = ScrollView(size_hint_y=1, bar_width=dp(3),
+                                      bar_color=COLOR_BORDE,
+                                      bar_inactive_color=(0, 0, 0, 0))
+        self.grid = GridLayout(cols=MIN_COLUMNAS, spacing=dp(10),
+                               padding=(dp(14), dp(8), dp(14), dp(20)),
+                               size_hint_y=None)
+        self.grid.bind(minimum_height=self.grid.setter("height"))
+        self.grid.bind(width=self._ajustar_columnas)
+        self.scroll_grid.add_widget(self.grid)
+        raiz.add_widget(self.scroll_grid)
 
-        scroll.add_widget(desc_box)
-        layout.add_widget(scroll)
+        self.add_widget(raiz)
+        self.poblar_grid(self.categoria_actual)
 
-        self.add_widget(layout)
+    # -- responsive: el numero de columnas sale del ancho real disponible ----
+    def _ajustar_columnas(self, *_):
+        espacio = self.grid.spacing[0]
+        disponible = self.grid.width - self.grid.padding[0] - self.grid.padding[2]
+        # +0.5 = redondeo al entero mas cercano en vez de truncar: sin esto un
+        # ancho de 2.9 columnas mostraria solo 2 y dejaria las cartas gigantes.
+        columnas = int((disponible + espacio) / (ANCHO_TILE_IDEAL + espacio) + 0.5)
+        columnas = max(MIN_COLUMNAS, min(MAX_COLUMNAS, columnas))
+        if columnas != self.grid.cols:
+            self.grid.cols = columnas
 
-    def _crear_bloque(self, titulo_texto, color, attr_name):
-        box = BoxLayout(orientation="vertical", size_hint_y=None, spacing=dp(4))
-        box.bind(minimum_height=box.setter("height"))
+    def cambiar_categoria(self, categoria):
+        if categoria == self.categoria_actual:
+            return
+        self.chips[self.categoria_actual].activo = False
+        self.categoria_actual = categoria
+        self.chips[categoria].activo = True
+        self.poblar_grid(categoria)
+
+    def poblar_grid(self, categoria):
+        """Inserta las tarjetas por lotes (unas pocas por frame). Decodificar
+        22 JPEG de golpe congela ~1s en un Android de gama baja; asi la UI
+        responde de inmediato y la grilla se completa sola."""
+        if self._evento_carga is not None:
+            self._evento_carga.cancel()
+            self._evento_carga = None
+
+        self.grid.clear_widgets()
+        self.scroll_grid.scroll_y = 1
+
+        cartas = DATOS_TAROT.get(categoria, [])
+        self.lbl_contador.text = f"{len(cartas)}"
+        self._pendientes = list(cartas)
+        self._evento_carga = Clock.schedule_interval(self._insertar_lote, 0)
+
+    def _insertar_lote(self, _dt, tamano=6):
+        for _ in range(tamano):
+            if not self._pendientes:
+                self._evento_carga = None
+                return False
+            self.grid.add_widget(CardTile(self._pendientes.pop(0), self.ver_detalle))
+        return True
+
+    def ver_detalle(self, carta):
+        pantalla = self.manager.get_screen("detail")
+        pantalla.actualizar_carta(carta)
+        self.manager.transition.direction = "left"
+        self.manager.current = "detail"
+
+
+# ---------------------------------------------------------------------------
+# Pantalla 2: detalle
+# ---------------------------------------------------------------------------
+class DetailScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        from kivy.factory import Factory
+
+        raiz = BoxLayout(orientation="vertical")
+
+        # --- App bar con boton atras ---
+        barra = BarraSuperior(padding=(dp(6), 0))
+        btn_volver = Factory.BotonIcono()
+        btn_volver.texto = "‹"          # ‹
+        btn_volver.size = (TOQUE_MINIMO, TOQUE_MINIMO)
+        btn_volver.bind(on_release=self.volver_grilla)
+        barra.add_widget(btn_volver)
+
+        cabecera_txt = BoxLayout(orientation="vertical", padding=(dp(4), dp(8)))
+        self.lbl_titulo = Label(
+            text="", font_name=FUENTE, font_size="17sp", bold=True,
+            color=COLOR_DORADO, halign="left", valign="bottom",
+            shorten=True, shorten_from="right",
+        )
+        self.lbl_titulo.bind(size=lambda i, v: setattr(i, "text_size", v))
+        self.lbl_subtitulo = Label(
+            text="", font_name=FUENTE, font_size="11sp",
+            color=COLOR_TEXTO_TENUE, halign="left", valign="top",
+        )
+        self.lbl_subtitulo.bind(size=lambda i, v: setattr(i, "text_size", v))
+        cabecera_txt.add_widget(self.lbl_titulo)
+        cabecera_txt.add_widget(self.lbl_subtitulo)
+        barra.add_widget(cabecera_txt)
+        raiz.add_widget(barra)
+
+        # --- Contenido: TODO scrollea junto (patron movil) ---
+        scroll = ScrollView(do_scroll_x=False, do_scroll_y=True,
+                            bar_width=dp(3), bar_color=COLOR_BORDE,
+                            bar_inactive_color=(0, 0, 0, 0))
+        self.contenido = BoxLayout(orientation="vertical", size_hint_y=None,
+                                   padding=(dp(14), dp(10), dp(14), dp(24)),
+                                   spacing=dp(14))
+        self.contenido.bind(minimum_height=self.contenido.setter("height"))
+
+        # Imagen centrada con marco dorado, dimensionada de forma responsive
+        centro = AnchorLayout(anchor_x="center", size_hint_y=None)
+        self.marco = Factory.MarcoImagen(size_hint=(None, None), padding=dp(3))
+        self.img_carta = Image(fit_mode="contain", mipmap=True)
+        self.marco.add_widget(self.img_carta)
+        centro.add_widget(self.marco)
+        self.centro = centro
+        self.contenido.add_widget(centro)
+
+        self.contenido.add_widget(
+            self._crear_bloque("↑  Derecho", COLOR_DERECHO, "lbl_derecho"))
+        self.contenido.add_widget(
+            self._crear_bloque("↓  Invertido", COLOR_INVERTIDO, "lbl_invertido"))
+
+        scroll.add_widget(self.contenido)
+        self.scroll = scroll
+        raiz.add_widget(scroll)
+        self.add_widget(raiz)
+
+        # El tamaño de la imagen depende del ancho Y del alto de la ventana:
+        # en pantallas bajas se achica para que el texto no quede empujado
+        # fuera de la vista al abrir la carta.
+        self.bind(size=self._redimensionar_imagen)
+        self._redimensionar_imagen()
+
+    def _redimensionar_imagen(self, *_):
+        ancho_disp = max(dp(80), self.width - dp(28))
+        # 62% del ancho, pero nunca mas alto que el 40% de la pantalla
+        ancho = min(ancho_disp * 0.62, dp(240))
+        ancho = min(ancho, (self.height * 0.40) / RATIO_CARTA)
+        ancho = max(dp(90), ancho)
+        alto = ancho * RATIO_CARTA
+        self.marco.size = (ancho + dp(6), alto + dp(6))
+        self.centro.height = alto + dp(6)
+
+    def _crear_bloque(self, titulo_texto, color, attr_lbl):
+        from kivy.factory import Factory
+
+        panel = Factory.Panel(orientation="vertical", size_hint_y=None,
+                              padding=(dp(14), dp(12)), spacing=dp(6))
+        panel.bind(minimum_height=panel.setter("height"))
 
         titulo = Label(
-            text=titulo_texto,
-            size_hint_y=None,
-            height=dp(22),
-            color=color,
-            bold=True,
-            font_size="14sp",
-            halign="left",
+            text=titulo_texto, size_hint_y=None, height=dp(20),
+            font_name=FUENTE, font_size="13sp", bold=True, color=color,
+            halign="left", valign="middle",
         )
-        titulo.bind(size=lambda inst, val: setattr(inst, "text_size", val))
-        box.add_widget(titulo)
+        titulo.bind(size=lambda i, v: setattr(i, "text_size", v))
+        panel.add_widget(titulo)
 
-        lbl = Label(
-            text="",
-            size_hint_y=None,
-            font_size="12sp",
-            color=COLOR_TEXTO,
-            halign="left",
-            valign="top",
+        cuerpo = Label(
+            text="", size_hint_y=None, font_name=FUENTE, font_size="13sp",
+            color=COLOR_TEXTO, halign="left", valign="top", line_height=1.35,
         )
-        lbl.bind(size=lambda inst, val: setattr(inst, "text_size", (val[0], None)))
-        lbl.bind(texture_size=lambda inst, val: setattr(inst, "height", val[1]))
-        box.add_widget(lbl)
-        setattr(self, attr_name, lbl)
+        # text_size solo con ancho fijo -> el texto hace wrap; la altura la
+        # dicta la textura resultante. Es lo que hace que el bloque crezca
+        # solo, sin importar el largo del significado ni el ancho de pantalla.
+        cuerpo.bind(width=lambda i, v: setattr(i, "text_size", (v, None)))
+        cuerpo.bind(texture_size=lambda i, v: setattr(i, "height", v[1]))
+        panel.add_widget(cuerpo)
+        setattr(self, attr_lbl, cuerpo)
 
-        return box
+        return panel
 
     def actualizar_carta(self, carta):
         self.lbl_titulo.text = carta["nombre"]
-        self.img_carta.source = carta["imagen"] if carta["imagen"] else ""
+        self.lbl_subtitulo.text = carta.get("subtitulo", "")
+        self.img_carta.source = carta["imagen"] or ""
         self.lbl_derecho.text = carta["derecho"]
         self.lbl_invertido.text = carta["invertido"]
+        # Cada carta se abre desde arriba, no donde quedo la anterior.
+        Clock.schedule_once(lambda *_: setattr(self.scroll, "scroll_y", 1), 0)
 
-    def volver_grilla(self, instance):
+    def volver_grilla(self, *_):
+        self.manager.transition.direction = "right"
         self.manager.current = "grid"
 
 
+# ---------------------------------------------------------------------------
+# App
+# ---------------------------------------------------------------------------
 class TarotApp(App):
     def build(self):
-        sm = ScreenManager(transition=FadeTransition())
-        sm.add_widget(GridScreen(name="grid"))
-        sm.add_widget(DetailScreen(name="detail"))
-        return sm
+        self.title = "Diccionario Tarot"
+        self.sm = ScreenManager(
+            transition=SlideTransition(duration=0.20, direction="left"))
+        self.sm.add_widget(GridScreen(name="grid"))
+        self.sm.add_widget(DetailScreen(name="detail"))
+        Window.bind(on_keyboard=self._tecla)
+        return self.sm
+
+    def _tecla(self, _window, key, *_args):
+        """Boton fisico ATRAS de Android (llega como key 27, igual que ESC).
+        Sin esto, tocar atras en el detalle cierra la app en vez de volver."""
+        if key == 27 and self.sm.current != "grid":
+            self.sm.transition.direction = "right"
+            self.sm.current = "grid"
+            return True
+        return False
 
 
-if __name__ == "__main__" or __name__ == "src.main":
+# El arranque en el APK lo hace main.py de la raiz (lo exige python-for-android).
+# Esta guarda permite ademas lanzarlo en escritorio con `python -m src.main`.
+if __name__ == "__main__":
     TarotApp().run()
