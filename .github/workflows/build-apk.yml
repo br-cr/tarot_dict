@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -10,36 +10,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Instalar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
-    - name: Install System Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk libffi-dev build-essential ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixin-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
-        pip install --upgrade pip
-        pip install buildozer cython
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev \
+            cmake libffi-dev libssl-dev
 
-    - name: Pre-accept Android SDK Licenses
-      run: |
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
-        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-        echo -e "\n89330d2222116a3a569d10727f322b2600005251\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63c6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-        echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-        echo -e "\nd975f751698a778109bf03cfd920f70e13233d68" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-arm-dcl-license
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Build APK with Buildozer
-      run: |
-        yes | buildozer -v android debug
+      - name: Instalar Buildozer
+        run: |
+          python -m pip install --upgrade pip
+          pip install buildozer cython
 
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: app-release
-        path: bin/*.apk
+      - name: Aceptar licencias Android
+        run: yes | buildozer android accept_sdk_license
+
+      - name: Compilar APK
+        env:
+          BUILDOZER_WARN_ON_ROOT: 0
+        run: |
+          buildozer android debug
+
+      - name: Subir APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TarotDict-APK
+          path: bin/*.apk

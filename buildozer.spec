@@ -37,13 +37,13 @@ android.permissions = INTERNET
 android.api = 33
 
 # (str) Android build tools version (FIJADO para evitar el error de licencias en la v37)
-android.build_tools_version = 33.0.2
+# android.build_tools_version = 33.0.2
 
 # (int) Minimum API your APK will support
 android.minapi = 21
 
 # (str) Android NDK version
-android.ndk = 25b
+# android.ndk = 25b
 
 # (bool) If True, automatically accept SDK licenses
 android.accept_sdk_licenses = True
@@ -60,4 +60,4 @@ android.archs = arm64-v8a, armeabi-v7a
 log_level = 2
 
 # (int) Display warning if buildozer is run as root
-warn_on_root = 1
+warn_on_root = 0
