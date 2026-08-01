@@ -23,6 +23,9 @@ jobs:
             kivy/buildozer:latest -c '
               set -euo pipefail
 
+              # Permitir ejecución como root en el entorno CI
+              export BUILDOZER_ALLOW_ROOT=1
+
               SDK_ROOT=/home/user/.buildozer/android/platform/android-sdk
               mkdir -p "$SDK_ROOT"
               cd /tmp
