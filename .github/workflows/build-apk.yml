@@ -10,19 +10,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
     steps:
       - name: Descargar el código del repo
         uses: actions/checkout@v4
 
-      - name: Compilar el APK
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: stable
+      - name: Compilar el APK con Buildozer
+        run: |
+          # opcional: mostrar versión
+          buildozer --version
+          buildozer android debug
 
       - name: Subir el APK como artefacto descargable
         uses: actions/upload-artifact@v4
         with:
           name: diccionariotarot-apk
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
