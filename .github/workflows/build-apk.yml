@@ -1,7 +1,5 @@
-name: Compilar APK con Buildozer
+name: Build Android APK
 
-# Se ejecuta cada vez que subís cambios a la rama "main",
-# y también podés dispararlo a mano desde la pestaña "Actions" de GitHub.
 on:
   push:
     branches: [main]
@@ -9,46 +7,161 @@ on:
 
 jobs:
   build:
-    # ubuntu-22.04 (NO ubuntu-latest/24.04): el NDK viejo que usa Buildozer
-    # (r25b) es compatible con la glibc de esta versión.
     runs-on: ubuntu-22.04
+    timeout-minutes: 90
+
+    env:
+      BUILD_TOOLS_VERSION: "34.0.0"
+      ANDROID_API: "34"
+      NDK_VERSION: "25.2.9519653"
+      SDK_DIR: /home/runner/.buildozer/android/platform/android-sdk
+
     steps:
-      - name: Descargar el código del repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Instalar dependencias del sistema
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Verify Java
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+          javac -version
+
+      - name: Install Linux dependencies
         run: |
           sudo apt-get update
+
           sudo apt-get install -y \
-            git zip unzip openjdk-17-jdk python3.10 python3.10-venv \
-            autoconf libtool pkg-config zlib1g-dev \
-            libncurses5 libtinfo6 cmake libffi-dev libssl-dev automake
+            build-essential \
+            git \
+            zip \
+            unzip \
+            autoconf \
+            automake \
+            libtool \
+            pkg-config \
+            cmake \
+            libffi-dev \
+            libssl-dev \
+            zlib1g-dev \
+            ffmpeg \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev
 
-      - name: Crear venv con Python 3.10 explícito
-        # IMPORTANTE: el runner de GitHub trae varias versiones de Python
-        # instaladas (incluida una 3.14 con el pip roto que ya vimos
-        # fallar). Si dejamos que Buildozer use "python" a secas, puede
-        # resolver a esa 3.14 rota en subprocesos internos (p.ej. cuando
-        # arma un venv temporal para instalar dependencias puras de
-        # Python). Forzamos explícitamente /usr/bin/python3.10 acá, y como
-        # activamos este venv en todos los pasos siguientes, cualquier
-        # subproceso que Buildozer dispare internamente hereda esta misma
-        # versión de Python.
-        run: /usr/bin/python3.10 -m venv "$HOME/venv-buildozer"
-
-      - name: Instalar Buildozer y Cython
+      - name: Install Buildozer
         run: |
-          source "$HOME/venv-buildozer/bin/activate"
-          pip install --upgrade pip
-          pip install buildozer cython==0.29.36
+          python -m pip install --upgrade pip setuptools wheel
 
-      - name: Compilar el APK
+          pip install \
+            buildozer==1.5.0 \
+            Cython==0.29.36
+
+      - name: Install Android command line tools
         run: |
-          source "$HOME/venv-buildozer/bin/activate"
-          yes | buildozer -v android debug
+          mkdir -p "$SDK_DIR/cmdline-tools"
 
-      - name: Subir el APK como artefacto descargable
+          if [ ! -d "$SDK_DIR/cmdline-tools/latest" ]; then
+
+            wget -q \
+              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+              -O /tmp/cmdline-tools.zip
+
+            unzip -q /tmp/cmdline-tools.zip \
+              -d /tmp/cmdline-tools
+
+            mv /tmp/cmdline-tools/cmdline-tools \
+              "$SDK_DIR/cmdline-tools/latest"
+          fi
+
+          mkdir -p "$SDK_DIR/tools/bin"
+
+          ln -sf \
+            "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" \
+            "$SDK_DIR/tools/bin/sdkmanager"
+
+          ln -sf \
+            "$SDK_DIR/cmdline-tools/latest/bin/avdmanager" \
+            "$SDK_DIR/tools/bin/avdmanager"
+
+          echo "$SDK_DIR/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+
+      - name: Install Android SDK
+        env:
+          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
+          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+
+          yes | sdkmanager --sdk_root="$SDK_DIR" --licenses || true
+
+          sdkmanager --sdk_root="$SDK_DIR" \
+            "platform-tools" \
+            "platforms;android-${ANDROID_API}" \
+            "build-tools;${BUILD_TOOLS_VERSION}" \
+            "ndk;${NDK_VERSION}"
+
+          yes | sdkmanager --sdk_root="$SDK_DIR" --licenses || true
+
+      - name: Clean previous Buildozer build
+        run: |
+          rm -rf .buildozer
+
+      - name: Verify environment
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+
+          echo "ANDROID_HOME=$ANDROID_HOME"
+
+          test -f buildozer.spec
+          test -f main.py
+
+      - name: Build APK
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+          PATH: ${{ env.JAVA_HOME }}/bin:${{ env.PATH }}
+
+          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
+          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
+          ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
+          ANDROID_NDK_ROOT: /home/runner/.buildozer/android/platform/android-ndk-r25b
+
+        run: |
+          set -o pipefail
+
+          java -version
+
+          buildozer android clean
+
+          buildozer -v android debug 2>&1 | tee build.log
+
+      - name: Upload Build Log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: diccionariotarot-apk
+          name: build-log
+          path: build.log
+
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TarotDict-APK
           path: bin/*.apk
