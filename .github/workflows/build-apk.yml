@@ -10,9 +10,7 @@ on:
 jobs:
   build:
     # ubuntu-22.04 (NO ubuntu-latest/24.04): el NDK viejo que usa Buildozer
-    # (r25b) es compatible con la glibc de esta versión. En 24.04 falla con
-    # el error "__GNUC_PREREQ is not defined" (bug conocido y sin fix en
-    # Buildozer todavía).
+    # (r25b) es compatible con la glibc de esta versión.
     runs-on: ubuntu-22.04
     steps:
       - name: Descargar el código del repo
@@ -22,20 +20,31 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git zip unzip openjdk-17-jdk python3-pip python3-venv \
+            git zip unzip openjdk-17-jdk python3.10 python3.10-venv \
             autoconf libtool pkg-config zlib1g-dev \
             libncurses5 libtinfo6 cmake libffi-dev libssl-dev automake
 
+      - name: Crear venv con Python 3.10 explícito
+        # IMPORTANTE: el runner de GitHub trae varias versiones de Python
+        # instaladas (incluida una 3.14 con el pip roto que ya vimos
+        # fallar). Si dejamos que Buildozer use "python" a secas, puede
+        # resolver a esa 3.14 rota en subprocesos internos (p.ej. cuando
+        # arma un venv temporal para instalar dependencias puras de
+        # Python). Forzamos explícitamente /usr/bin/python3.10 acá, y como
+        # activamos este venv en todos los pasos siguientes, cualquier
+        # subproceso que Buildozer dispare internamente hereda esta misma
+        # versión de Python.
+        run: /usr/bin/python3.10 -m venv "$HOME/venv-buildozer"
+
       - name: Instalar Buildozer y Cython
-        # Nada de Docker acá: instalamos Buildozer directo con el pip del
-        # sistema (Python 3.10 en ubuntu-22.04), evitando así el bug de pip
-        # roto que tenía la imagen kivy/buildozer:latest con Python 3.14.
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install buildozer cython==0.29.36
+          source "$HOME/venv-buildozer/bin/activate"
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.36
 
       - name: Compilar el APK
         run: |
+          source "$HOME/venv-buildozer/bin/activate"
           yes | buildozer -v android debug
 
       - name: Subir el APK como artefacto descargable

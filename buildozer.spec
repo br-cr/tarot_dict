@@ -57,7 +57,11 @@ android.accept_sdk_license = True
 android.skip_update = False
 
 # (list) The Android arch to build for
-android.archs = arm64-v8a, armeabi-v7a
+# TEMPORAL: solo arm64-v8a por ahora (cubre prácticamente todos los
+# celulares Android de los últimos ~8 años). armeabi-v7a es de 32 bits,
+# para equipos más viejos, y estaba dando problemas en el build. Se puede
+# volver a agregar más adelante: android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a
 
 [buildozer]
 
