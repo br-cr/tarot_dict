@@ -135,8 +135,6 @@ jobs:
 
       - name: Build APK
         env:
-          JAVA_HOME: ${{ env.JAVA_HOME }}
-          PATH: ${{ env.JAVA_HOME }}/bin:${{ env.PATH }}
 
           ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
           ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
