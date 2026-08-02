@@ -148,8 +148,6 @@ jobs:
 
           java -version
 
-          buildozer android clean
-
           buildozer -v android debug 2>&1 | tee build.log
 
       - name: Upload Build Log
