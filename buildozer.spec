@@ -15,23 +15,14 @@ source.dir = .
 # (list) Source files to include
 source.include_exts = py,png,jpg,jpeg,kv,json,ttf
 
-# (list) List of directory to exclude
-source.exclude_dirs = bin, .buildozer, .github, .git, __pycache__, src/__pycache__, venv, .venv
-
-# (list) List of exclusions using pattern matching
-source.exclude_patterns = .DS_Store, */.DS_Store, *.pyc, *.pyo
+# (list) List of directory to include
+source.include_dirs = assets, src
 
 # (str) Application versioning
 version = 0.1
 
 # (list) Application requirements
-requirements = python3,kivy==2.3.0
-
-# (str) Rama/tag de python-for-android
-# Fijado para evitar que buildozer use master y cambie
-# de versión de Python/p4a inesperadamente.
-p4a.branch = v2024.01.21
-
+requirements = python3,kivy
 
 # (list) Supported orientations
 orientation = portrait
@@ -43,32 +34,30 @@ fullscreen = 0
 android.permissions = INTERNET
 
 # (int) Target Android API
-android.api = 34
+android.api = 33
+
+# (str) Android build tools version (FIJADO para evitar que baje la v37,
+# que después no se puede aceptar la licencia si accept_sdk_license falla)
+android.build_tools_version = 33.0.2
 
 # (int) Minimum API your APK will support
 android.minapi = 21
 
-# (int) Minimum NDK API
-android.ndk_api = 21
-
 # (str) Android NDK version
 android.ndk = 25b
 
-# (str) Android build tools version
-android.build_tools_version = 34.0.0
-
-# (bool) Automatically accept SDK license
+# (bool) Si True, acepta automáticamente las licencias del SDK.
+# OJO: la clave es "android.accept_sdk_license" (SIN la "s" al final de
+# "license"). Con la "s" de más, Buildozer no la reconoce y la ignora,
+# lo que hace que nunca acepte las licencias en modo no interactivo (CI
+# o Docker) y falle igual que si dijera False. Ese era el bug.
 android.accept_sdk_license = True
 
 # (bool) If True, skip trying to update the Android sdk
 android.skip_update = False
 
 # (list) The Android arch to build for
-android.archs = arm64-v8a
-
-# (bool) enables Android auto backup feature
-android.allow_backup = True
-
+android.archs = arm64-v8a, armeabi-v7a
 
 [buildozer]
 
