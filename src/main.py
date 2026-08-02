@@ -20,7 +20,6 @@ if not EN_ANDROID:
 
 from kivy.config import Config
 
-<<<<<<< HEAD
 
 def _tamano_pantalla():
     """Tamaño del monitor en PUNTOS (las mismas unidades en las que se pide el
@@ -62,19 +61,6 @@ if not EN_ANDROID:
     # grilla se reacomoda (es la forma de probar el diseño responsive en Mac).
     Config.set("graphics", "minimum_width", "360")
     Config.set("graphics", "minimum_height", "520")
-=======
-if not EN_ANDROID:
-    # 720x1440 px reales = 360x720 dp logicos: proporcion 18:9, la de un
-    # celular actual. El layout NO depende de este tamaño (es responsive),
-    # esto es solo la ventana de previsualizacion en escritorio.
-    Config.set("graphics", "width", "720")
-    Config.set("graphics", "height", "1440")
-    Config.set("graphics", "resizable", "1")
-    # Minimo bajo a proposito: permite encoger la ventana para comprobar que la
-    # grilla se reacomoda (es la forma de probar el diseño responsive en Mac).
-    Config.set("graphics", "minimum_width", "400")
-    Config.set("graphics", "minimum_height", "640")
->>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
 
 from kivy.app import App
 from kivy.clock import Clock
@@ -148,15 +134,10 @@ RATIO_CARTA = 1.73
 ANCHO_TILE_IDEAL = dp(110)
 MIN_COLUMNAS = 2
 MAX_COLUMNAS = 8
-<<<<<<< HEAD
 ALTO_ETIQUETA = dp(32)       # espacio del nombre bajo cada carta (2 lineas)
 # 60 y no 56: la barra del detalle apila titulo (17sp) + subtitulo (11sp), y con
 # 56 dp menos el padding quedaban 20 dp por linea, que recorta el titulo.
 ALTO_BARRA = dp(60)
-=======
-ALTO_ETIQUETA = dp(30)       # espacio del nombre bajo cada carta (2 lineas)
-ALTO_BARRA = dp(56)
->>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
 TOQUE_MINIMO = dp(48)        # area tactil minima recomendada en movil
 
 # Solo simbolos presentes en DejaVu Sans. Los emoji tipo U+1F52E NO estan en
@@ -547,28 +528,17 @@ class DetailScreen(Screen):
         btn_volver.bind(on_release=self.volver_grilla)
         barra.add_widget(btn_volver)
 
-<<<<<<< HEAD
         cabecera_txt = BoxLayout(orientation="vertical", padding=(dp(4), dp(5)))
         self.lbl_titulo = Label(
             text="", font_name=FUENTE, font_size="17sp", bold=True,
             color=COLOR_DORADO, halign="left", valign="bottom",
             shorten=True, shorten_from="right", size_hint_y=0.58,
-=======
-        cabecera_txt = BoxLayout(orientation="vertical", padding=(dp(4), dp(8)))
-        self.lbl_titulo = Label(
-            text="", font_name=FUENTE, font_size="17sp", bold=True,
-            color=COLOR_DORADO, halign="left", valign="bottom",
-            shorten=True, shorten_from="right",
->>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
         )
         self.lbl_titulo.bind(size=lambda i, v: setattr(i, "text_size", v))
         self.lbl_subtitulo = Label(
             text="", font_name=FUENTE, font_size="11sp",
             color=COLOR_TEXTO_TENUE, halign="left", valign="top",
-<<<<<<< HEAD
             size_hint_y=0.42,
-=======
->>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
         )
         self.lbl_subtitulo.bind(size=lambda i, v: setattr(i, "text_size", v))
         cabecera_txt.add_widget(self.lbl_titulo)
