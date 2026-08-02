@@ -1,5 +1,7 @@
-name: Build Android APK
+name: Compilar APK con Buildozer
 
+# Se ejecuta cada vez que subís cambios a la rama "main",
+# y también podés dispararlo a mano desde la pestaña "Actions" de GitHub.
 on:
   push:
     branches: [main]
@@ -7,139 +9,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-
-    env:
-      BUILD_TOOLS_VERSION: '34.0.0'
-      ANDROID_API: '34'
-      NDK_VERSION: '25.2.9519653'
-      SDK_DIR: /home/runner/.buildozer/android/platform/android-sdk
-
-      # Debe coincidir con p4a.branch del buildozer.spec
-      P4A_BRANCH: v2024.01.21
-
+    # IMPORTANTE: NO usar "ubuntu-latest". Desde que GitHub cambió ese alias
+    # a Ubuntu 24.04, el NDK viejo que usa Buildozer (r25b) queda expuesto a
+    # headers de glibc demasiado nuevos y falla al compilar el código C de
+    # Kivy con el error "function-like macro '__GNUC_PREREQ' is not
+    # defined". Es un problema conocido y reportado (kivy/buildozer#1900),
+    # sin fix todavía dentro de Buildozer/NDK r25b — se evita fijando el
+    # runner a Ubuntu 22.04.
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Descargar el código del repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Compilar el APK
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          python-version: '3.11'
+          command: buildozer android debug
+          buildozer_version: stable
 
-      - name: Set up Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            git zip unzip \
-            ffmpeg \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            libportmidi-dev \
-            libswscale-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            zlib1g-dev \
-            libffi-dev \
-            libssl-dev \
-            libltdl-dev \
-            autoconf \
-            automake \
-            libtool \
-            cmake \
-            pkg-config
-
-      - name: Install Buildozer and Cython
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install buildozer==1.5.0 "cython==0.29.36"
-
-      - name: Cache Buildozer global directory
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.buildozer
-            .buildozer
-          key: buildozer-${{ runner.os }}-p4a-${{ env.P4A_BRANCH }}-${{ hashFiles('buildozer.spec') }}
-          restore-keys: |
-            buildozer-${{ runner.os }}-p4a-${{ env.P4A_BRANCH }}-
-
-      - name: Setup Android command line tools (+ symlinks)
-        run: |
-          mkdir -p "$SDK_DIR/cmdline-tools"
-
-          if [ ! -d "$SDK_DIR/cmdline-tools/latest" ]; then
-            wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
-              -O /tmp/cmdline-tools.zip
-
-            unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools-extract
-
-            mv /tmp/cmdline-tools-extract/cmdline-tools \
-              "$SDK_DIR/cmdline-tools/latest"
-          fi
-
-          chmod +x "$SDK_DIR/cmdline-tools/latest/bin/"*
-
-          mkdir -p "$SDK_DIR/tools/bin"
-
-          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" \
-            "$SDK_DIR/tools/bin/sdkmanager"
-
-          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/avdmanager" \
-            "$SDK_DIR/tools/bin/avdmanager"
-
-          echo "$SDK_DIR/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
-
-      - name: Accept SDK licenses and install pinned packages
-        env:
-          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
-          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
-        run: |
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
-
-          yes | sdkmanager --sdk_root="$SDK_DIR" --licenses > /dev/null || true
-
-          sdkmanager --sdk_root="$SDK_DIR" \
-            "platform-tools" \
-            "platforms;android-${ANDROID_API}" \
-            "build-tools;${BUILD_TOOLS_VERSION}" \
-            "ndk;${NDK_VERSION}"
-
-          yes | sdkmanager --sdk_root="$SDK_DIR" --licenses > /dev/null || true
-
-      - name: Sanity check
-        run: |
-          test -f main.py || {
-            echo "::error::Falta main.py en la raiz"
-            exit 1
-          }
-          ls -la
-
-      - name: Build APK with Buildozer
-        env:
-          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
-          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
-          ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
-          ANDROID_NDK_ROOT: /home/runner/.buildozer/android/platform/android-ndk-r25b
-        run: |
-          set -o pipefail
-          buildozer -v android debug 2>&1 | tee /tmp/buildozer.log
-
-      - name: Upload APK Artifact
-        if: success()
+      - name: Subir el APK como artefacto descargable
         uses: actions/upload-artifact@v4
         with:
-          name: TarotDict-APK
-          path: bin/*.apk
-          if-no-files-found: error
+          name: diccionariotarot-apk
+          path: ${{ steps.buildozer.outputs.filename }}
