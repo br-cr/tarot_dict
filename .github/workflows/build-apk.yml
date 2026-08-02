@@ -9,27 +9,27 @@ on:
 
 jobs:
   build:
-    # IMPORTANTE: NO usar "ubuntu-latest". Desde que GitHub cambió ese alias
-    # a Ubuntu 24.04, el NDK viejo que usa Buildozer (r25b) queda expuesto a
-    # headers de glibc demasiado nuevos y falla al compilar el código C de
-    # Kivy con el error "function-like macro '__GNUC_PREREQ' is not
-    # defined". Es un problema conocido y reportado (kivy/buildozer#1900),
-    # sin fix todavía dentro de Buildozer/NDK r25b — se evita fijando el
-    # runner a Ubuntu 22.04.
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Descargar el código del repo
         uses: actions/checkout@v4
 
-      - name: Compilar el APK
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: stable
+      - name: Compilar el APK con el contenedor oficial de Kivy
+        # Usamos docker run directo (la imagen oficial kivy/buildozer) en vez
+        # de una action de terceros: así el build queda 100% autocontenido
+        # dentro del contenedor (mismo NDK/glibc consistentes, sin mezclar
+        # headers del runner) y evitamos depender de que un tercero mantenga
+        # su propio Dockerfile actualizado. El runner de GitHub es Linux
+        # x86_64 nativo, así que tampoco hay emulación de por medio (a
+        # diferencia de correr esto en un Mac Apple Silicon).
+        run: |
+          docker run --rm \
+            --volume "$HOME/.buildozer":/home/user/.buildozer \
+            --volume "$PWD":/home/user/hostcwd \
+            kivy/buildozer android debug
 
       - name: Subir el APK como artefacto descargable
         uses: actions/upload-artifact@v4
         with:
           name: diccionariotarot-apk
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
