@@ -100,7 +100,7 @@ El APK queda en `bin/`.
 ## Editar cartas
 
 1. Edita `tarot_78_cartas_extenso.json` siguiendo el formato de arriba.
-2. Si es una carta nueva, agregá su imagen a `assets/cartas/` con el nombre de archivo correspondiente (ver convención más arriba).
+2. Si es una carta nueva, agrega su imagen a `assets/cartas/` con el nombre de archivo correspondiente (ver convención más arriba).
 3. No hace falta tocar el código: `src/main.py` y `src/ruta_imagenes.py` leen el JSON dinámicamente.
 
 ## Tech stack
