@@ -8,10 +8,14 @@
       "Bash(python -c \"import kivy; print\\(kivy.__version__\\)\")",
       "Bash(python __TRACKED_VAR__/smoke.py)",
       "Bash(python -)",
+<<<<<<< HEAD
       "Bash(python __TRACKED_VAR__/final2.py)",
       "Bash(python __TRACKED_VAR__/vent.py)",
       "Read(//c/Users/bcampos/Downloads/tarot_dict/**)",
       "Read(//c/Users/bcampos/Downloads/**)"
+=======
+      "Bash(python __TRACKED_VAR__/final2.py)"
+>>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
     ]
   }
 }

@@ -30,6 +30,7 @@ version = 0.1
 
 # (list) Application requirements
 requirements = python3,kivy==2.3.0
+<<<<<<< HEAD
 
 # (str) rama/tag de python-for-android a usar.
 # CRITICO: por defecto buildozer NO usa una version publicada de p4a, clona
@@ -40,6 +41,8 @@ requirements = python3,kivy==2.3.0
 # Este tag trae CPython 3.11.5 + recipe de kivy 2.3.0 + NDK 25b, que es
 # justo lo que declara este spec. NO quitar el pin: volveria a romperse solo.
 p4a.branch = v2024.01.21
+=======
+>>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
 
 # (list) Supported orientations
 orientation = portrait

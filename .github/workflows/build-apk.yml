@@ -15,10 +15,13 @@ jobs:
       ANDROID_API: '34'
       NDK_VERSION: '25.2.9519653'   # equivale a android.ndk = 25b
       SDK_DIR: /home/runner/.buildozer/android/platform/android-sdk
+<<<<<<< HEAD
       # Debe coincidir con p4a.branch del buildozer.spec: entra en la clave de
       # cache para que un cambio de p4a no reutilice un build de otra version
       # de Python (los directorios de compilacion se llaman igual y chocan).
       P4A_BRANCH: v2024.01.21
+=======
+>>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
 
     steps:
       - name: Checkout repository
@@ -73,9 +76,15 @@ jobs:
           path: |
             ~/.buildozer
             .buildozer
+<<<<<<< HEAD
           key: buildozer-${{ runner.os }}-p4a-${{ env.P4A_BRANCH }}-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
             buildozer-${{ runner.os }}-p4a-${{ env.P4A_BRANCH }}-
+=======
+          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-${{ runner.os }}-
+>>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
 
       - name: Setup Android command line tools (+ symlinks de compatibilidad)
         run: |
@@ -156,6 +165,12 @@ jobs:
           name: buildozer-log
           path: /tmp/buildozer.log
           if-no-files-found: warn
+
+      - name: Show build log tail on failure
+        if: failure()
+        run: |
+          echo "===== bin/ ====="; ls -la bin 2>/dev/null || echo "(sin bin/)"
+          echo "===== .buildozer ====="; ls -la .buildozer 2>/dev/null || true
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
