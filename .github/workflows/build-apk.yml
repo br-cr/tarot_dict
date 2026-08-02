@@ -13,15 +13,11 @@ jobs:
     env:
       BUILD_TOOLS_VERSION: '34.0.0'
       ANDROID_API: '34'
-      NDK_VERSION: '25.2.9519653'   # equivale a android.ndk = 25b
+      NDK_VERSION: '25.2.9519653'
       SDK_DIR: /home/runner/.buildozer/android/platform/android-sdk
-<<<<<<< HEAD
-      # Debe coincidir con p4a.branch del buildozer.spec: entra en la clave de
-      # cache para que un cambio de p4a no reutilice un build de otra version
-      # de Python (los directorios de compilacion se llaman igual y chocan).
+
+      # Debe coincidir con p4a.branch del buildozer.spec
       P4A_BRANCH: v2024.01.21
-=======
->>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
 
     steps:
       - name: Checkout repository
@@ -68,40 +64,39 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install buildozer==1.5.0 "cython==0.29.36"
 
-      # Cachear ~/.buildozer evita re-descargar el NDK (~1 GB) y el SDK en cada
-      # corrida. La clave depende del spec: si cambias API/NDK, se invalida sola.
       - name: Cache Buildozer global directory
         uses: actions/cache@v4
         with:
           path: |
             ~/.buildozer
             .buildozer
-<<<<<<< HEAD
           key: buildozer-${{ runner.os }}-p4a-${{ env.P4A_BRANCH }}-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
             buildozer-${{ runner.os }}-p4a-${{ env.P4A_BRANCH }}-
-=======
-          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
-          restore-keys: |
-            buildozer-${{ runner.os }}-
->>>>>>> cf5b367a9b80dd4f40a5f3637d249835c7a3f8e1
 
-      - name: Setup Android command line tools (+ symlinks de compatibilidad)
+      - name: Setup Android command line tools (+ symlinks)
         run: |
           mkdir -p "$SDK_DIR/cmdline-tools"
 
           if [ ! -d "$SDK_DIR/cmdline-tools/latest" ]; then
-            wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdline-tools.zip
+            wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+              -O /tmp/cmdline-tools.zip
+
             unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools-extract
-            mv /tmp/cmdline-tools-extract/cmdline-tools "$SDK_DIR/cmdline-tools/latest"
+
+            mv /tmp/cmdline-tools-extract/cmdline-tools \
+              "$SDK_DIR/cmdline-tools/latest"
           fi
+
           chmod +x "$SDK_DIR/cmdline-tools/latest/bin/"*
 
-          # Buildozer 1.5.0 sigue buscando sdkmanager en la ruta ANTIGUA
-          # (tools/bin). Los symlinks cubren ambas rutas.
           mkdir -p "$SDK_DIR/tools/bin"
-          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" "$SDK_DIR/tools/bin/sdkmanager"
-          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/avdmanager" "$SDK_DIR/tools/bin/avdmanager"
+
+          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" \
+            "$SDK_DIR/tools/bin/sdkmanager"
+
+          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/avdmanager" \
+            "$SDK_DIR/tools/bin/avdmanager"
 
           echo "$SDK_DIR/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
 
@@ -110,14 +105,11 @@ jobs:
           ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
           ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
         run: |
-          mkdir -p ~/.android && touch ~/.android/repositories.cfg
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
 
-          # Aceptacion real via sdkmanager (mas fiable que escribir los hashes a mano)
           yes | sdkmanager --sdk_root="$SDK_DIR" --licenses > /dev/null || true
 
-          # Instalar EXACTAMENTE las versiones que declara buildozer.spec.
-          # Sin esto, buildozer resuelve "la ultima" build-tools (36/37 preview)
-          # y falla pidiendo una licencia que no existe.
           sdkmanager --sdk_root="$SDK_DIR" \
             "platform-tools" \
             "platforms;android-${ANDROID_API}" \
@@ -126,9 +118,12 @@ jobs:
 
           yes | sdkmanager --sdk_root="$SDK_DIR" --licenses > /dev/null || true
 
-      - name: Sanity check (main.py en la raiz)
+      - name: Sanity check
         run: |
-          test -f main.py || { echo "::error::Falta main.py en la raiz; python-for-android lo exige."; exit 1; }
+          test -f main.py || {
+            echo "::error::Falta main.py en la raiz"
+            exit 1
+          }
           ls -la
 
       - name: Build APK with Buildozer
@@ -141,38 +136,8 @@ jobs:
           set -o pipefail
           buildozer -v android debug 2>&1 | tee /tmp/buildozer.log
 
-      # El log de buildozer pasa las 45.000 lineas y el error real queda
-      # sepultado entre miles de warnings de Cython. Esto lo deja arriba.
-      - name: Resumen del error
-        if: failure()
-        run: |
-          echo "=================== VERSIONES ==================="
-          echo "p4a branch pedido: $P4A_BRANCH"
-          git -C .buildozer/android/platform/python-for-android describe --tags 2>/dev/null \
-            || echo "(p4a no llego a clonarse)"
-          grep -oE "python-version 3\.[0-9]+\.[0-9]+" /tmp/buildozer.log | sort -u | head -3
-          echo "============ ERRORES DE COMPILACION ============="
-          grep -nE "(^|[^a-z])(error|fatal error):" /tmp/buildozer.log | head -30 \
-            || echo "(ninguno: el fallo no fue del compilador)"
-          echo "=========== EXCEPCIONES DE BUILDOZER ============"
-          grep -nE "Command failed|BuildInterruptingException|Traceback \(most recent" \
-            /tmp/buildozer.log | head -10 || echo "(ninguna)"
-
-      - name: Subir log completo
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: buildozer-log
-          path: /tmp/buildozer.log
-          if-no-files-found: warn
-
-      - name: Show build log tail on failure
-        if: failure()
-        run: |
-          echo "===== bin/ ====="; ls -la bin 2>/dev/null || echo "(sin bin/)"
-          echo "===== .buildozer ====="; ls -la .buildozer 2>/dev/null || true
-
       - name: Upload APK Artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TarotDict-APK
